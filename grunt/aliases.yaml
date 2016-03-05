@@ -1,0 +1,18 @@
+default:
+  - 'build'
+
+_dev:
+  - 'clean'
+  - 'concurrent'
+  - 'autoprefixer'
+  - 'connect:dev'
+  - 'webpack:dev'
+  - 'watch'
+
+build:
+  - 'clean'
+  - 'concurrent'
+  - 'autoprefixer'
+  - 'cssmin'
+  - 'webpack:build'
+  - 'copy'

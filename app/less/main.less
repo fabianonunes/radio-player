@@ -1,0 +1,48 @@
+@import "vendors/bootstrap";
+@import "vendors/senado";
+@import "utils/variables";
+
+@c1 : #4c061d;
+@c2 : #8e3b46;
+@c3 : #6a8d73;
+@c4 : #c1cc99;
+@c5 : #bcd8c1;
+
+.Progress {
+  position: relative;
+  font-size: 0;
+
+  background: @c5;
+
+  &:before {
+    content: ".";
+    text-indent: -9999px;
+    left: 0;
+    right: 0;
+    bottom: -20px;
+    top: -20px;
+    position: absolute;
+  }
+}
+
+  .Progress-bar {
+    height: 10px;
+    width: 100%;
+
+    position: relative;
+
+    transform: scaleX(0);
+    transform-origin: 0 0;
+    background: @c2;
+  }
+
+  .Progress-scrubber {
+    display: block;
+    position: absolute;
+
+    width: 10px;
+    bottom: -5px;
+    top: -5px;
+
+    background: @c3;
+  }
