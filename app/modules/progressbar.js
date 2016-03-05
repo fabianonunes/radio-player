@@ -1,18 +1,18 @@
 'use strict'
 
 var $ = require('jquery')
-var easing = require('./easing')
 
 var Progress = function (el) {
 
   var $el = $(el)
   var $scrubber = $el.find('.Progress-scrubber')
-  var scrubberWidth = $scrubber.width()
+  var scrubberWidth = $scrubber.outerWidth()
   var scrubber = $scrubber[0]
 
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
 
   var value = 0
+  var maxValue = $el.data('maxValue') || 100
   var isDragging = false
   var componentWidth
   var elOffset
@@ -24,17 +24,13 @@ var Progress = function (el) {
   }
 
   var change = function () {
+    console.log(value * maxValue)
   }
 
   var calcScrubberWidth = function (v) {
-    var maxRatio = (componentWidth - scrubberWidth) / scrubberWidth
-    var ratio = scrubberWidth / componentWidth
-    var r = maxRatio * v
-    if (ratio > v) {
-      r = easing.easeInQuart(v / ratio) * r
-    }
-
-    return r
+    var pixels = v * componentWidth
+    var position = Math.max(pixels - scrubberWidth / 2, 0)
+    return Math.min(position, componentWidth - scrubberWidth) / scrubberWidth
   }
 
   var updateWidth = function () {
@@ -49,7 +45,6 @@ var Progress = function (el) {
     var scrubberStyle = scrubber.style
     property = 'translateX(' + calcScrubberWidth(value) * 100 + '%)'
     scrubberStyle.transform = scrubberStyle.webkitTransform = scrubberStyle.msTransform = property
-
   }
 
   var setValue = function (v) {
@@ -61,7 +56,7 @@ var Progress = function (el) {
     return offsetX / componentWidth
   }
 
-  var seek = function (ev) {
+  var click = function (ev) {
     updateDimensions()
     setValue(inputPosition(ev))
     updateWidth()
@@ -93,7 +88,7 @@ var Progress = function (el) {
   }
 
   $el
-    .on('click.progress', seek)
+    .on('click.progress', click)
     .on('touchstart.progress', touchstart)
     .on('touchmove.progress', touchmove)
     .on('touchend.progress', touchend)
