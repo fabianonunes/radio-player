@@ -1,45 +1,46 @@
 'use strict'
 
 var $ = require('jquery')
+var Eev = require('eev')
+var transformKey = require('./lib/transform-key')
 
-var Progress = function (el) {
-
-  // var scrubber = $el.find('.Progress-scrubber')[0]
+module.exports = function (el) {
 
   var $el = $(el)
+
   var scrubber = $el.find('.Progress-scrubber')[0]
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
   var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
 
+  var r = new Eev()
+
   var value = 0
-  var maxValue = $el.data('maxValue') || 100
   var isDragging = false
   var componentWidth
   var elOffset
 
+  var change = function () {
+    r.emit('change', value * $el.data('maxValue'))
+  }
+
   var updateDimensions = function () {
-    // atualizar largura do component em caso de resize
+    // atualiza largura do component em caso de resize
     componentWidth = $el.outerWidth() // TODO : width ou outerWidth?
     elOffset = $el.offset()
   }
 
-  var change = function () {
-    console.log(value * maxValue)
-  }
-
+  var doneStyle = done.style
+  var scrubberStyle = scrubber.style
   var updateWidth = function () {
-    if (isDragging) {
-      requestAnimationFrame(updateWidth)
-    }
-
-    var doneStyle = done.style
     var property = 'translateX(' + (value - 1) * 100 + '%)'
-    doneStyle.transform = doneStyle.webkitTransform = doneStyle.msTransform = property
+    doneStyle[transformKey] = property
 
     if (scrubber) {
-      var scrubberStyle = scrubber.style
-      property = 'translateX(' + (value - 1) * 100 + '%)'
-      scrubberStyle.transform = scrubberStyle.webkitTransform = scrubberStyle.msTransform = property
+      scrubberStyle[transformKey] = property
+    }
+
+    if (isDragging) {
+      requestAnimationFrame(updateWidth)
     }
   }
 
@@ -55,7 +56,7 @@ var Progress = function (el) {
   var click = function (ev) {
     updateDimensions()
     setValue(inputPosition(ev))
-    updateWidth()
+    requestAnimationFrame(updateWidth)
     change()
   }
 
@@ -71,7 +72,7 @@ var Progress = function (el) {
     if (!isDragging) {
       isDragging = true
       touchmove(ev)
-      updateWidth()
+      requestAnimationFrame(updateWidth)
     }
 
     ev.preventDefault()
@@ -89,6 +90,6 @@ var Progress = function (el) {
     .on('touchmove.progress', touchmove)
     .on('touchend.progress', touchend)
 
-}
+  return r
 
-module.exports = Progress
+}
