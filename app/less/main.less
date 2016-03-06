@@ -2,52 +2,65 @@
 @import "vendors/senado";
 @import "utils/variables";
 
-@c1 : #4c061d;
-@c2 : #8e3b46;
-@c3 : #6a8d73;
-@c4 : #c1cc99;
-@c5 : #bcd8c1;
+@c1 : #F2B08A;
+@c2 : #F2F2F2;
+@c3 : #E3EFE5;
+@c4 : #88ADCC;
+@c5 : #2F83BF;
+
+@scrubber-width: 12px;
 
 .Progress {
   position: relative;
-  font-size: 0;
-
-  background: @c5;
+  background: @c2;
+  height: 6px;
+  margin-left: @scrubber-width / 2;
+  margin-right: @scrubber-width / 2;
 
   &:before {
     content: ".";
     text-indent: -9999px;
     left: 0;
     right: 0;
-    bottom: -20px;
-    top: -20px;
+    bottom: -10px;
+    top: -10px;
     position: absolute;
   }
 }
 
   .Progress-bar {
-    height: 6px;
-    width: 100%;
-
-    position: relative;
-
-    transform: scaleX(0);
-    transform-origin: 0 0;
-    background: @c2;
+    height: 100%;
+    overflow-x: hidden;
   }
+
+    .Progress-done {
+      height: 100%;
+      background: @c4;
+      transform: translateX(0%);
+      transform-origin: 0 0;
+    }
 
   .Progress-scrubber {
-    display: block;
+    height: 100%;
+    width: 100%;
     position: absolute;
+    top: 0;
 
-    top: 50%;
-    margin-top: -6px;
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      right: -@scrubber-width / 2;
 
-    border: 2px solid #fff;
-    border-radius: 6px;
-    height: 12px;
-    width: 12px;
-    background: #EEE;
-    box-shadow: 0 0 2px rgba(0,0,0,.5);
+      height: @scrubber-width;
+      width: @scrubber-width;
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #EEE;
+      box-shadow: 0 0 2px rgba(0,0,0,.5);
+    }
   }
-

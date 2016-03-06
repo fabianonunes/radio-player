@@ -4,12 +4,12 @@ var $ = require('jquery')
 
 var Progress = function (el) {
 
-  var $el = $(el)
-  var $scrubber = $el.find('.Progress-scrubber')
-  var scrubberWidth = $scrubber.outerWidth()
-  var scrubber = $scrubber[0]
+  // var scrubber = $el.find('.Progress-scrubber')[0]
 
+  var $el = $(el)
+  var scrubber = $el.find('.Progress-scrubber')[0]
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
+  var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
 
   var value = 0
   var maxValue = $el.data('maxValue') || 100
@@ -27,24 +27,20 @@ var Progress = function (el) {
     console.log(value * maxValue)
   }
 
-  var calcScrubberWidth = function (v) {
-    var pixels = v * componentWidth
-    var position = Math.max(pixels - scrubberWidth / 2, 0)
-    return Math.min(position, componentWidth - scrubberWidth) / scrubberWidth
-  }
-
   var updateWidth = function () {
     if (isDragging) {
       requestAnimationFrame(updateWidth)
     }
 
-    var barStyle = bar.style
-    var property = 'scaleX(' + value + ')'
-    barStyle.transform = barStyle.webkitTransform = barStyle.msTransform = property
+    var doneStyle = done.style
+    var property = 'translateX(' + (value - 1) * 100 + '%)'
+    doneStyle.transform = doneStyle.webkitTransform = doneStyle.msTransform = property
 
-    var scrubberStyle = scrubber.style
-    property = 'translateX(' + calcScrubberWidth(value) * 100 + '%)'
-    scrubberStyle.transform = scrubberStyle.webkitTransform = scrubberStyle.msTransform = property
+    if (scrubber) {
+      var scrubberStyle = scrubber.style
+      property = 'translateX(' + (value - 1) * 100 + '%)'
+      scrubberStyle.transform = scrubberStyle.webkitTransform = scrubberStyle.msTransform = property
+    }
   }
 
   var setValue = function (v) {
