@@ -4,14 +4,14 @@
   "duration": 3704.2736249999998,
   "tracks": [
     {
-      "duration": 1499.3320624999999,
-      "url": "/assets/audios/3269f2f2-ef76-44a1-8c9e-d5c80bae2ae3.mp3",
-      "title": "Jornal do Executivo"
-    },
-    {
       "duration": 345.21618749999999,
       "url": "/assets/audios/d4cdc9ef-4f53-44b0-99d1-aa38eb5d6a7d.mp3",
       "title": "Jornal do Judiciário"
+    },
+    {
+      "duration": 1499.3320624999999,
+      "url": "/assets/audios/3269f2f2-ef76-44a1-8c9e-d5c80bae2ae3.mp3",
+      "title": "Jornal do Executivo"
     },
     {
       "duration": 591.81206250000002,

@@ -15,7 +15,8 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.jade$/, loader: 'jade-loader' }
+      { test: /\.jade$/, loader: 'jade' },
+      { test: /\.json$/, loader: 'json' }
     ]
   },
   resolve: {

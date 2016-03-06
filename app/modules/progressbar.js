@@ -23,7 +23,7 @@ module.exports = function (el) {
   }
 
   var change = function () {
-    r.emit('change', value * maxValue(), value)
+    r.emit('change', { value: value * maxValue(), progress: value })
   }
 
   var updateDimensions = function () {
@@ -105,6 +105,8 @@ module.exports = function (el) {
   // }
 
   updateWidth()
+
+  r.setValue = setValue
 
   return r
 

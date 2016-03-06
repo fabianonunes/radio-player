@@ -1,9 +1,11 @@
 'use strict'
 
+var Eev = require('eev')
+
 module.exports = function (audio, emitterAdapter) {
 
   var audioEmitter = emitterAdapter(audio)
-  var emitter = {}
+  var emitter = new Eev()
 
   var trackSet
   var lastUpdate
@@ -15,7 +17,7 @@ module.exports = function (audio, emitterAdapter) {
     audio.play()
 
     if (quiet !== true) {
-      emitter.fire('playing')
+      emitter.emit('playing')
     }
   }
 
@@ -24,7 +26,7 @@ module.exports = function (audio, emitterAdapter) {
 
     if (quiet !== true) {
       audioEmitter.one('pause', function () {
-        emitter.fire('pause')
+        emitter.emit('pause')
       })
     }
   }
@@ -37,7 +39,7 @@ module.exports = function (audio, emitterAdapter) {
     }
 
     audio.src = ''
-    emitter.fire('stop')
+    emitter.emit('stop')
   }
 
   var eject = function () {
@@ -47,7 +49,7 @@ module.exports = function (audio, emitterAdapter) {
 
   var error = function () {
     eject()
-    emitter.fire('error', trackSet)
+    emitter.emit('error', trackSet)
   }
 
   var timeupdate = function () {
@@ -58,20 +60,23 @@ module.exports = function (audio, emitterAdapter) {
     var comparison = Math.round(diffUpdate / diffTime)
 
     if (diffTime < 0 || comparison !== 1) {
-      emitter.fire('waiting')
+      emitter.emit('waiting')
     } else if (!audio.paused) {
-      emitter.fire('playing')
+      emitter.emit('playing')
     }
 
     lastUpdate = currentUpdate
     lastTime = currentTime
 
     var progress = audio.currentTime / audio.duration
-    emitter.fire('progress', trackSet.currentProgress(progress))
+    emitter.emit('progress', {
+      progress: trackSet.currentProgress(progress),
+      currentTime: audio.currentTime
+    })
   }
 
   var seek = function (position) {
-    emitter.fire('waiting')
+    emitter.emit('waiting')
     pause(true)
     audio.currentTime = position
 
@@ -92,10 +97,10 @@ module.exports = function (audio, emitterAdapter) {
       return error()
     }
 
-    emitter.fire('waiting')
+    emitter.emit('waiting')
 
     audioEmitter.one('error', error)
-    audio.src = trackSet.currentTrack.url
+    audio.src = trackSet.currentTrack().url
     audio.load() // necessário para o IOS
 
     audioEmitter
@@ -111,9 +116,9 @@ module.exports = function (audio, emitterAdapter) {
         } else {
           seek(position)
         }
-      } else {
-        bindAudioEvents()
       }
+
+      bindAudioEvents()
     })
 
   }
@@ -121,9 +126,9 @@ module.exports = function (audio, emitterAdapter) {
   var search = function (progress) {
     pause(true)
     var search = trackSet.search(progress)
-    if (trackSet.currentTrack.idx !== search.track.idx) {
-      trackSet.currentTrack = search.track
-      cue(trackSet.currentTrack, search.position)
+    if (trackSet.currentTrack().idx !== search.track.idx) {
+      trackSet.setTrack(search.track.idx)
+      cue(trackSet.currentTrack(), search.position)
     } else {
       seek(search.position)
     }
@@ -151,15 +156,15 @@ module.exports = function (audio, emitterAdapter) {
     audioEmitter
       .on('timeupdate', timeupdate)
       .on('ended', ended)
-      .on('waiting loadstart', emitter.fire.bind(emitter, 'waiting'))
+      .on('waiting loadstart', emitter.emit.bind(emitter, 'waiting'))
   }
 
-  return {
-    play: play,
-    pause: pause,
-    point: point,
-    search: search,
-    ejected: eject
-  }
+  emitter.play = play
+  emitter.pause = pause
+  emitter.point = point
+  emitter.search = search
+  emitter.ejected = eject
+
+  return emitter
 
 }

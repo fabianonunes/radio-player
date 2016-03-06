@@ -1,22 +1,16 @@
 'use strict'
 
-var _pluck = require('lodash/pluck')
-var data = require('./data.json')
+var _map = require('lodash/map')
 
-// trackSet.currentProgress(progress)
-// trackSet.currentTrack
-// trackSet.currentTrack.url
-// trackSet.id
-// trackSet.next()
-// trackSet.rewind()
-// trackSet.search(progress)
-
-module.exports = function () {
+module.exports = function (data) {
 
   var _currentIdx = 0
-  var id
-  var tracks = []
-  var totalDuration
+  var totalDuration = data.duration
+
+  var tracks = data.tracks.map(function (track, i) {
+    track.idx = i
+    return track
+  })
 
   var next = function () {
     _currentIdx += 1
@@ -27,12 +21,16 @@ module.exports = function () {
     return tracks[_currentIdx]
   }
 
+  var setTrack = function (idx) {
+    _currentIdx = idx
+  }
+
   var rewind = function () {
     _currentIdx = 0
     return currentTrack()
   }
 
-  var totalProgress = function (currentProgress) {
+  var currentProgress = function (progress) {
 
     var previous = 0
 
@@ -40,7 +38,7 @@ module.exports = function () {
       previous += tracks[i].duration
     }
 
-    return (currentTrack().duration * currentProgress + previous) / totalDuration
+    return (currentTrack().duration * progress + previous) / totalDuration
 
   }
 
@@ -52,7 +50,7 @@ module.exports = function () {
 
     progress = progress * totalDuration
 
-    _pluck(tracks, 'duration').some(function (duration, i) {
+    _map(tracks, 'duration').some(function (duration, i) {
       if (start + duration > progress) {
         idx = i
         position = progress - start
@@ -71,11 +69,21 @@ module.exports = function () {
 
   var composition = function () {
     var start = 0
-    return _pluck(tracks, 'duration').map(function (duration) {
+    return _map(tracks, 'duration').map(function (duration) {
       var retval = start / totalDuration
       start += duration
       return retval
     })
+  }
+
+  return {
+    next: next,
+    composition: composition,
+    search: search,
+    rewind: rewind,
+    setTrack: setTrack,
+    currentTrack: currentTrack,
+    currentProgress: currentProgress
   }
 
 }
