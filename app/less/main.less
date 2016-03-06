@@ -36,8 +36,9 @@
     .Progress-done {
       height: 100%;
       background: @c4;
+
       will-change: transform;
-      transform: translateX(0%);
+      transform: translateX(-100%);
       transform-origin: 0 0;
     }
 
@@ -46,6 +47,9 @@
     width: 100%;
     position: absolute;
     top: 0;
+
+    will-change: transform;
+    transform: translateX(-100%);
 
     &:after {
       content: ' ';
@@ -57,7 +61,6 @@
       width: @scrubber-width;
 
       top: 50%;
-      will-change: transform;
       transform: translateY(-50%);
 
       border: 2px solid #fff;

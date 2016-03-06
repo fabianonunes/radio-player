@@ -1,57 +1,58 @@
 'use strict'
 
-var Backbone = require('backbone')
 var _pluck = require('lodash/pluck')
+var data = require('./data.json')
 
-module.exports = Backbone.Model.extend({
+// trackSet.currentProgress(progress)
+// trackSet.currentTrack
+// trackSet.currentTrack.url
+// trackSet.id
+// trackSet.next()
+// trackSet.rewind()
+// trackSet.search(progress)
 
-  defaults: {
-    current: 0,
-    audios: [],
-    state: 'paused'
-  },
+module.exports = function () {
 
-  next: function () {
-    var idx = this.get('current') + 1
-    this.set('current', idx)
-    return this.get('audios')[idx]
-  },
+  var _currentIdx = 0
+  var id
+  var tracks = []
+  var totalDuration
 
-  rewind: function () {
-    this.set('current', 0)
-  },
+  var next = function () {
+    _currentIdx += 1
+    return tracks[_currentIdx]
+  }
 
-  currentAudio: function () {
-    return this.get('audios')[this.get('current')]
-  },
+  var currentTrack = function () {
+    return tracks[_currentIdx]
+  }
 
-  total: function () {
-    return this.get('audios').length
-  },
+  var rewind = function () {
+    _currentIdx = 0
+    return currentTrack()
+  }
 
-  totalProgress: function (currentProgress) {
+  var totalProgress = function (currentProgress) {
 
     var previous = 0
-    var current = this.get('audios')[this.get('current')]
 
-    for (var i = this.get('current') - 1; i >= 0; i = i - 1) {
-      previous += this.get('audios')[i].duracao
+    for (var i = _currentIdx - 1; i >= 0; i = i - 1) {
+      previous += tracks[i].duration
     }
 
-    return (current.duracao * currentProgress + previous) / this.get('length')
+    return (currentTrack().duration * currentProgress + previous) / totalDuration
 
-  },
+  }
 
-  search: function (progress) {
+  var search = function (progress) {
 
     var start = 0
     var idx = -1
     var position = 0
-    var audios = this.get('audios')
 
-    progress = progress * this.get('length')
+    progress = progress * totalDuration
 
-    _pluck(audios, 'duracao').some(function (duration, i) {
+    _pluck(tracks, 'duration').some(function (duration, i) {
       if (start + duration > progress) {
         idx = i
         position = progress - start
@@ -62,24 +63,19 @@ module.exports = Backbone.Model.extend({
     })
 
     return {
-      idx: idx,
+      track: tracks[idx],
       position: position
     }
 
-  },
+  }
 
-  composition: function () {
-
+  var composition = function () {
     var start = 0
-    var audios = this.get('audios')
-    var length = this.get('length')
-
-    return _pluck(audios, 'duracao').map(function (duration) {
-      var retval = start / length
+    return _pluck(tracks, 'duration').map(function (duration) {
+      var retval = start / totalDuration
       start += duration
       return retval
     })
-
   }
 
-})
+}

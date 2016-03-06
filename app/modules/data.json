@@ -1,0 +1,27 @@
+{
+  "id": "e79c0647-dcda-48c5-baf6-640b7afac234",
+  "title": "Voz do Brasil - 04/03/2016",
+  "duration": 3704.2736249999998,
+  "tracks": [
+    {
+      "duration": 1499.3320624999999,
+      "url": "/assets/audios/3269f2f2-ef76-44a1-8c9e-d5c80bae2ae3.mp3",
+      "title": "Jornal do Executivo"
+    },
+    {
+      "duration": 345.21618749999999,
+      "url": "/assets/audios/d4cdc9ef-4f53-44b0-99d1-aa38eb5d6a7d.mp3",
+      "title": "Jornal do Judiciário"
+    },
+    {
+      "duration": 591.81206250000002,
+      "url": "/assets/audios/04d978bb-f7e2-44aa-9319-c7fc58ac43d2.mp3",
+      "title": "Jornal do Senado"
+    },
+    {
+      "duration": 1267.9133125000001,
+      "url": "/assets/audios/d75304ef-06d7-4fb0-bea5-529073531573.mp3",
+      "title": "Jornal da Câmara dos Deputados"
+    }
+  ]
+}
