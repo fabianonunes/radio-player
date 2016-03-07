@@ -73,7 +73,7 @@ module.exports = function (data) {
       var retval = start / totalDuration
       start += duration
       return retval
-    })
+    }).slice(1)
   }
 
   return {

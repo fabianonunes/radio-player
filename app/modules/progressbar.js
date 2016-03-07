@@ -94,25 +94,24 @@ module.exports = function (el) {
     scrubValue = false
   }
 
+  var pipes = function (composition) {
+    $el.find('.Progress-pipe').remove()
+    composition.forEach(function (sect) {
+      $('<span class="Progress-pipe"></span>')
+        .css({ left: sect * 100 + '%' }).appendTo($el)
+    })
+  }
+
   $el
     .on('click.progress', click)
     .on('touchstart.progress', touchstart)
     .on('touchmove.progress', touchmove)
     .on('touchend.progress', touchend)
 
-  // TODO: marcar pontos na progressbar
-  // pipes: function (composition) {
-  //   composition.shift()
-  //   this.bar.find('.Progress-pipe').remove()
-  //   composition.forEach(function (sect) {
-  //     $('<span class="Progress-pipe"></span>')
-  //       .css({ left: sect * 100 + '%' }).insertBefore(this.done)
-  //   }.bind(this))
-  // }
-
   updateWidth()
 
   r.setValue = setValue
+  r.pipes = pipes
 
   return r
 

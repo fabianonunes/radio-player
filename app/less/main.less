@@ -31,6 +31,8 @@
   .Progress-bar {
     height: 100%;
     overflow-x: hidden;
+    position: relative;
+    z-index: 1;
   }
 
     .Progress-done {
@@ -40,6 +42,7 @@
       will-change: transform;
       transform: translateX(-100%);
       transform-origin: 0 0;
+      z-index: 1;
     }
 
   .Progress-scrubber {
@@ -68,4 +71,13 @@
       background: #EEE;
       box-shadow: 0 0 2px rgba(0,0,0,.5);
     }
+    z-index: 2;
+  }
+
+  .Progress-pipe {
+    position: absolute;
+    background: @c1;
+    height: 100%;
+    width: 2px;
+    top: 0;
   }
