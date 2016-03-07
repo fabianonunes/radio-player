@@ -21,18 +21,21 @@ module.exports = function (el) {
   var componentWidth
   var elOffset
 
-  var maxValue = function () {
+  var maxValue = function (v) {
+    if (v) {
+      $el.data('maxValue', v)
+    }
     return $el.data('maxValue')
   }
 
-  var change = function (adjust) {
-    r.emit(adjust ? 'adjust' : 'change', {
+  var change = function (slide) {
+    r.emit(slide ? 'slide' : 'change', {
       value: value * maxValue(),
       progress: value
     })
   }
 
-  var updateDimensions = function () {
+  var relayout = function () {
     // atualiza largura do component em caso de resize
     componentWidth = $el.outerWidth() // TODO : width ou outerWidth?
     elOffset = $el.offset()
@@ -56,9 +59,9 @@ module.exports = function (el) {
     return Math.max(0, Math.min(n, 1))
   }
 
-  var setValue = function (v, adjust) {
+  var setValue = function (v, slide) {
     value = normalizeInput(v)
-    change(adjust)
+    change(slide)
     if (scrubValue === false) {
       requestAnimationFrame(updateWidth)
     }
@@ -70,9 +73,9 @@ module.exports = function (el) {
   }
 
   var click = function (ev) {
-    updateDimensions()
+    relayout()
     setValue(inputPosition(ev))
-    requestAnimationFrame(updateWidth)
+    updateWidth()
   }
 
   var touchmove = function (ev) {
@@ -82,7 +85,7 @@ module.exports = function (el) {
 
   var touchstart = function (ev) {
     // TODO: adicionar classe que avisa o dragging
-    updateDimensions()
+    relayout()
     touchmove(ev)
     requestAnimationFrame(updateWidth)
     ev.preventDefault()
@@ -97,8 +100,7 @@ module.exports = function (el) {
   var pipes = function (composition) {
     $el.find('.Progress-pipe').remove()
     composition.forEach(function (sect) {
-      $('<span class="Progress-pipe"></span>')
-        .css({ left: sect * 100 + '%' }).appendTo($el)
+      $('<span class="Progress-pipe"></span>').css({ left: sect * 100 + '%' }).appendTo($el)
     })
   }
 
@@ -111,8 +113,8 @@ module.exports = function (el) {
   updateWidth()
 
   r.setValue = setValue
+  r.maxValue = maxValue
   r.pipes = pipes
 
   return r
-
 }

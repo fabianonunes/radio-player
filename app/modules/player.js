@@ -13,7 +13,8 @@ module.exports = function (audio, emitterAdapter) {
   var bindAudioEvents
 
   var play = function (quiet) {
-    lastUpdate = lastTime = 10e90
+    lastUpdate = lastTime = false
+
     audio.play()
 
     if (quiet !== true) {
@@ -55,15 +56,20 @@ module.exports = function (audio, emitterAdapter) {
   var timeupdate = function () {
     var currentUpdate = new Date().getTime()
     var currentTime = audio.currentTime * 1000
-    var diffUpdate = currentUpdate - lastUpdate
-    var diffTime = currentTime - lastTime
+    var diffUpdate = currentUpdate - (lastUpdate || currentUpdate)
+    var diffTime = currentTime - (lastTime || currentTime)
     var comparison = Math.round(diffUpdate / diffTime)
 
-    if (diffTime < 0 || comparison !== 1) {
-      emitter.emit('waiting')
-    } else if (!audio.paused) {
-      emitter.emit('playing')
-    }
+    console.log(comparison)
+
+    // // if (diffTime < 0 || comparison !== 1) {
+    // if (comparison !== 1 || !_isNaN(comparison)) {
+    //   // console.log('current', currentUpdate, currentTime)
+    //   // console.log('diff', diffUpdate, diffTime)
+    //   emitter.emit('waiting')
+    // } else if (!audio.paused) {
+    //   emitter.emit('playing')
+    // }
 
     lastUpdate = currentUpdate
     lastTime = currentTime
@@ -91,7 +97,8 @@ module.exports = function (audio, emitterAdapter) {
   }
 
   var cue = function (track, position) {
-    stop()
+
+    audioEmitter.off()
 
     if (!track) {
       return error()
@@ -165,7 +172,12 @@ module.exports = function (audio, emitterAdapter) {
   emitter.pause = pause
   emitter.point = point
   emitter.search = search
-  emitter.ejected = eject
+
+  ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
+    emitter.on(event, function () {
+      emitter.emit('state', event)
+    })
+  })
 
   return emitter
 
