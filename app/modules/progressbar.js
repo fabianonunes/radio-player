@@ -9,12 +9,15 @@ module.exports = function (el) {
   var $el = $(el)
   var r = new Eev()
 
-  var scrubber = $el.find('.Progress-scrubber')[0]
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
   var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
+  var scrubber = $el.find('.Progress-scrubber')[0]
+
+  var doneStyle = done.style
+  var scrubberStyle = scrubber.style
 
   var value = 0
-  var isDragging = false
+  var scrubValue = false
   var componentWidth
   var elOffset
 
@@ -22,8 +25,11 @@ module.exports = function (el) {
     return $el.data('maxValue')
   }
 
-  var change = function () {
-    r.emit('change', { value: value * maxValue(), progress: value })
+  var change = function (adjust) {
+    r.emit(adjust ? 'adjust' : 'change', {
+      value: value * maxValue(),
+      progress: value
+    })
   }
 
   var updateDimensions = function () {
@@ -32,24 +38,30 @@ module.exports = function (el) {
     elOffset = $el.offset()
   }
 
-  var doneStyle = done.style
-  var scrubberStyle = scrubber.style
   var updateWidth = function () {
-    var property = 'translateX(' + (value - 1) * 100 + '%)'
+    var w = scrubValue !== false ? scrubValue : value
+    var property = 'translateX(' + (w - 1) * 100 + '%)'
     doneStyle[transformKey] = property
 
     if (scrubber) {
       scrubberStyle[transformKey] = property
     }
 
-    if (isDragging) {
+    if (scrubValue !== false) {
       requestAnimationFrame(updateWidth)
     }
   }
 
+  var normalizeInput = function (n) {
+    return Math.max(0, Math.min(n, 1))
+  }
+
   var setValue = function (v, adjust) {
-    value = Math.max(0, Math.min(v, 1))
-    r.emit(adjust ? 'adjust' : 'change', value * maxValue(), value)
+    value = normalizeInput(v)
+    change(adjust)
+    if (scrubValue === false) {
+      requestAnimationFrame(updateWidth)
+    }
   }
 
   var inputPosition = function (ev) {
@@ -59,33 +71,27 @@ module.exports = function (el) {
 
   var click = function (ev) {
     updateDimensions()
-    setValue(inputPosition(ev), true)
+    setValue(inputPosition(ev))
     requestAnimationFrame(updateWidth)
-    change()
   }
 
   var touchmove = function (ev) {
     ev = ev.originalEvent || ev
-    setValue(inputPosition(ev.changedTouches[0]), true)
+    scrubValue = normalizeInput(inputPosition(ev.changedTouches[0]))
   }
 
   var touchstart = function (ev) {
-    updateDimensions()
-
     // TODO: adicionar classe que avisa o dragging
-    if (!isDragging) {
-      isDragging = true
-      touchmove(ev)
-      requestAnimationFrame(updateWidth)
-    }
-
+    updateDimensions()
+    touchmove(ev)
+    requestAnimationFrame(updateWidth)
     ev.preventDefault()
   }
 
   var touchend = function () {
     // TODO: remover classe que avisa o dragging
-    isDragging = false
-    change()
+    setValue(scrubValue)
+    scrubValue = false
   }
 
   $el

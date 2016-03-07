@@ -125,7 +125,7 @@ module.exports = function (audio, emitterAdapter) {
 
   var search = function (progress) {
     pause(true)
-    var search = trackSet.search(progress)
+    var search = trackSet.search(progress === 1 ? progress - 1 / 10e4 : progress)
     if (trackSet.currentTrack().idx !== search.track.idx) {
       trackSet.setTrack(search.track.idx)
       cue(trackSet.currentTrack(), search.position)
