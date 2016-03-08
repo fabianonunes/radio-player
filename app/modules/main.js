@@ -3,7 +3,7 @@
 var progressbar = require('./progressbar')
 var $ = require('jquery')
 
-var data = require('./fixtures/voz-do-brasil.json')
+var data = require('./fixtures/brasil-regional.json')
 var track = require('./track')(data)
 
 

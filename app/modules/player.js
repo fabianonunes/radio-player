@@ -8,15 +8,10 @@ module.exports = function (audio, emitterAdapter) {
   var emitter = new Eev()
 
   var trackSet
-  var lastUpdate
-  var lastTime
   var bindAudioEvents
 
   var play = function (quiet) {
-    lastUpdate = lastTime = false
-
     audio.play()
-
     if (quiet !== true) {
       emitter.emit('playing')
     }
@@ -24,7 +19,6 @@ module.exports = function (audio, emitterAdapter) {
 
   var pause = function (quiet) {
     audio.pause()
-
     if (quiet !== true) {
       audioEmitter.one('pause', function () {
         emitter.emit('pause')
@@ -53,37 +47,12 @@ module.exports = function (audio, emitterAdapter) {
     emitter.emit('error', trackSet)
   }
 
-  var timerId
   var timeupdate = function () {
-
-    var currentUpdate = new Date().getTime()
-    var currentTime = audio.currentTime * 1000
-    var diffUpdate = currentUpdate - (lastUpdate || currentUpdate)
-    var diffTime = currentTime - (lastTime || currentTime)
-    var comparison = Math.round(diffUpdate / diffTime)
-
-    clearTimeout(timerId)
-    console.log(audio.paused, audio.currentTime)
-
     if (audio.paused) {
       emitter.emit('waiting')
     } else {
       emitter.emit('playing')
     }
-
-    // timerId = setTimeout(function () {
-    //   if (!audio.paused) {
-    //     if (diffTime < 0 || comparison !== 1) {
-    //       emitter.emit('waiting')
-    //     } else {
-    //       emitter.emit('playing')
-    //     }
-    //   }
-    // }, 250)
-
-    lastUpdate = currentUpdate
-    lastTime = currentTime
-
     var progress = audio.currentTime / audio.duration
     emitter.emit('progress', {
       progress: trackSet.currentProgress(progress),
@@ -120,7 +89,7 @@ module.exports = function (audio, emitterAdapter) {
     audio.src = trackSet.currentTrack().url
     audio.load() // necessário para o IOS
 
-    emitter.emit('cued')
+    emitter.emit('cued', trackSet.currentTrack())
 
     audioEmitter
     .one('loadedmetadata', play.bind(null, true))
@@ -164,32 +133,18 @@ module.exports = function (audio, emitterAdapter) {
   }
 
   var point = function (ts) {
-    if (!trackSet || trackSet.id !== ts.id) {
-      eject()
-      trackSet = ts
-      cue(trackSet.rewind())
-    }
+    eject()
+    trackSet = ts
+    cue(trackSet.rewind())
   }
 
   bindAudioEvents = function () {
     audioEmitter
-      .on('timeupdate', timeupdate)
-      .on('ended', ended)
-      .on('waiting loadstart', function () {
-        emitter.emit('waiting')
-      })
-
-    ;['abort', 'canplay', 'canplaythrough', 'durationchange',
-    'emptied', 'encrypted ', 'ended', 'error',
-    'interruptbegin', 'interruptend', 'loadeddata',
-    'loadedmetadata', 'loadstart', 'mozaudioavailable',
-    'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
-    'timeupdate', 'volumechange', 'waiting'].forEach(function (eventName) {
-      audioEmitter.on(eventName, function () {
-        console.log(eventName)
-      })
+    .on('timeupdate', timeupdate)
+    .on('ended', ended)
+    .on('waiting loadstart', function () {
+      emitter.emit('waiting')
     })
-
   }
 
   emitter.play = play
