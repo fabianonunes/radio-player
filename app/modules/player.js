@@ -63,16 +63,23 @@ module.exports = function (audio, emitterAdapter) {
     var comparison = Math.round(diffUpdate / diffTime)
 
     clearTimeout(timerId)
+    console.log(audio.paused, audio.currentTime)
 
-    timerId = setTimeout(function () {
-      if (!audio.paused) {
-        if (diffTime < 0 || comparison !== 1) {
-          emitter.emit('waiting')
-        } else {
-          emitter.emit('playing')
-        }
-      }
-    }, 250)
+    if (audio.paused) {
+      emitter.emit('waiting')
+    } else {
+      emitter.emit('playing')
+    }
+
+    // timerId = setTimeout(function () {
+    //   if (!audio.paused) {
+    //     if (diffTime < 0 || comparison !== 1) {
+    //       emitter.emit('waiting')
+    //     } else {
+    //       emitter.emit('playing')
+    //     }
+    //   }
+    // }, 250)
 
     lastUpdate = currentUpdate
     lastTime = currentTime
