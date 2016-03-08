@@ -1,28 +1,21 @@
 'use strict'
 
-var progress = require('./progressbar')
+var progressbar = require('./progressbar')
 var $ = require('jquery')
 
-var bar = progress($('.Progress')[0])
+var data = require('./fixtures/voz-do-brasil.json')
+var track = require('./track')(data)
 
-bar.on('change', function (data) {
-  console.log(data)
-})
 
 var audio = $('#test')[0]
-var data = require('./fixtures/brasil-regional.json')
-var track = require('./track')(data)
+var progress = $('.Progress')[0]
+var $text = $('#time')
+var $state = $('#state')
+
+var bar = progressbar(progress)
+bar.disable()
+
 var player = require('./player')(audio, $)
-
-player.on('tiago', function (data) {
-  alert('olá')
-  alert(data)
-})
-
-player.on('tiago', function (data) {
-  alert('alô')
-  alert(data)
-})
 
 bar.pipes(track.composition())
 
@@ -30,12 +23,14 @@ bar.on('change', function (data) {
   player.search(data.progress)
 })
 
-var $text = $('#time')
-var $state = $('#state')
 player.on('progress', function (data) {
   bar.setValue(data.progress, true)
   $text.text(data.progress)
 })
+
+player.on('cued', bar.enable)
+player.on('stop', bar.disable)
+
 player.on('state', function (state) {
   $state.text(state + '...')
 })

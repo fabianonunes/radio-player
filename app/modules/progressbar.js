@@ -20,11 +20,13 @@ module.exports = function (el) {
   var scrubValue = false
   var componentWidth
   var elOffset
+  var enabled = false
 
   var maxValue = function (v) {
     if (v) {
       $el.data('maxValue', v)
     }
+
     return $el.data('maxValue')
   }
 
@@ -60,10 +62,12 @@ module.exports = function (el) {
   }
 
   var setValue = function (v, slide) {
-    value = normalizeInput(v)
-    change(slide)
-    if (scrubValue === false) {
-      requestAnimationFrame(updateWidth)
+    if (enabled) {
+      value = normalizeInput(v)
+      change(slide)
+      if (scrubValue === false) {
+        requestAnimationFrame(updateWidth)
+      }
     }
   }
 
@@ -104,17 +108,32 @@ module.exports = function (el) {
     })
   }
 
-  $el
-    .on('click.progress', click)
-    .on('touchstart.progress', touchstart)
-    .on('touchmove.progress', touchmove)
-    .on('touchend.progress', touchend)
+  var disable = function () {
+    $el.off('.progress')
+    enabled = false
+  }
 
+  var enable = function () {
+    if (enabled) {
+      return
+    }
+
+    $el
+      .on('click.progress', click)
+      .on('touchstart.progress', touchstart)
+      .on('touchmove.progress', touchmove)
+      .on('touchend.progress', touchend)
+    enabled = true
+  }
+
+  enable()
   updateWidth()
 
   r.setValue = setValue
   r.maxValue = maxValue
   r.pipes = pipes
+  r.enable = enable
+  r.disable = disable
 
   return r
 }

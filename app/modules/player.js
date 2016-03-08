@@ -53,23 +53,26 @@ module.exports = function (audio, emitterAdapter) {
     emitter.emit('error', trackSet)
   }
 
+  var timerId
   var timeupdate = function () {
+
     var currentUpdate = new Date().getTime()
     var currentTime = audio.currentTime * 1000
     var diffUpdate = currentUpdate - (lastUpdate || currentUpdate)
     var diffTime = currentTime - (lastTime || currentTime)
     var comparison = Math.round(diffUpdate / diffTime)
 
-    console.log(comparison)
+    clearTimeout(timerId)
 
-    // // if (diffTime < 0 || comparison !== 1) {
-    // if (comparison !== 1 || !_isNaN(comparison)) {
-    //   // console.log('current', currentUpdate, currentTime)
-    //   // console.log('diff', diffUpdate, diffTime)
-    //   emitter.emit('waiting')
-    // } else if (!audio.paused) {
-    //   emitter.emit('playing')
-    // }
+    timerId = setTimeout(function () {
+      if (!audio.paused) {
+        if (diffTime < 0 || comparison !== 1) {
+          emitter.emit('waiting')
+        } else {
+          emitter.emit('playing')
+        }
+      }
+    }, 250)
 
     lastUpdate = currentUpdate
     lastTime = currentTime
@@ -109,6 +112,8 @@ module.exports = function (audio, emitterAdapter) {
     audioEmitter.one('error', error)
     audio.src = trackSet.currentTrack().url
     audio.load() // necessário para o IOS
+
+    emitter.emit('cued')
 
     audioEmitter
     .one('loadedmetadata', play.bind(null, true))
@@ -166,6 +171,18 @@ module.exports = function (audio, emitterAdapter) {
       .on('waiting loadstart', function () {
         emitter.emit('waiting')
       })
+
+    ;['abort', 'canplay', 'canplaythrough', 'durationchange',
+    'emptied', 'encrypted ', 'ended', 'error',
+    'interruptbegin', 'interruptend', 'loadeddata',
+    'loadedmetadata', 'loadstart', 'mozaudioavailable',
+    'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
+    'timeupdate', 'volumechange', 'waiting'].forEach(function (eventName) {
+      audioEmitter.on(eventName, function () {
+        console.log(eventName)
+      })
+    })
+
   }
 
   emitter.play = play
@@ -178,6 +195,7 @@ module.exports = function (audio, emitterAdapter) {
       emitter.emit('state', event)
     })
   })
+
 
   return emitter
 
