@@ -1,6 +1,7 @@
 'use strict'
 
 var Eev = require('eev')
+var audiobinder = require('./lib/audiobinder')
 
 module.exports = function (audio, emitterAdapter) {
 
@@ -9,9 +10,9 @@ module.exports = function (audio, emitterAdapter) {
 
   var state
   var disc
-  var bindAudioEvents
 
-  var intervalId
+  var bindAudioEvents
+  var cue
 
   var emitNewState = function (newState) {
     if (state !== newState) {
@@ -28,6 +29,7 @@ module.exports = function (audio, emitterAdapter) {
     lastTime = audio.currentTime
   }
 
+  var intervalId
   var watch = function (stop) {
     clearInterval(intervalId)
     lastTime = undefined
@@ -37,14 +39,15 @@ module.exports = function (audio, emitterAdapter) {
     }
   }
 
-  var play = function (quiet) {
+  var play = function () {
     if (disc) {
-      audio.play()
-      if (quiet !== true) {
-        emitter.emit('playing')
+      if (disc.currentTrack()) {
+        audio.play()
+        watch()
+      } else {
+        disc.rewind()
+        cue()
       }
-
-      watch()
     }
   }
 
@@ -107,9 +110,10 @@ module.exports = function (audio, emitterAdapter) {
     })
   }
 
-  var cue = function (position) {
+  cue = function (position) {
 
     audioEmitter.off()
+
     emitter.emit('waiting')
 
     audioEmitter
@@ -139,33 +143,43 @@ module.exports = function (audio, emitterAdapter) {
     if (disc) {
       pause(true)
       var search = disc.search(progress)
-      if (!search.track) {
-        stop()
-      } else if (disc.currentTrack().idx !== search.track.idx) {
+      if (disc.currentTrack().idx !== search.track.idx) {
         disc.setTrack(search.track.idx)
-        cue(disc.currentTrack(), search.position)
+        cue(search.position)
       } else {
         seek(search.position)
       }
     }
   }
 
+  var rewind = function () {
+    watch(true)
+    disc.release()
+    emitter.emit('progress', {
+      progress: 0,
+      currentTime: 0
+    })
+    emitNewState('stop')
+  }
+
   var ended = function () {
     var next = disc.next()
     if (next) {
       cue()
+    } else {
+      rewind()
     }
   }
 
   var point = function (ts) {
-    eject()
-
     if (!ts) {
       return error()
     }
 
+    // eject()
     disc = ts
-    cue(disc.rewind())
+    disc.rewind()
+    cue()
   }
 
   bindAudioEvents = function () {
@@ -175,13 +189,15 @@ module.exports = function (audio, emitterAdapter) {
     .on('waiting loadstart', function () {
       emitter.emit('waiting')
     })
+
+    audiobinder(audioEmitter)
   }
 
   emitter.play = play
   emitter.pause = pause
   emitter.point = point
   emitter.search = search
-  emitter.track = function () {
+  emitter.disc = function () {
     return disc
   }
 

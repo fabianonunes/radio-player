@@ -19,8 +19,19 @@ html(lang='pt')
       .row
         .col-xs-12
           .Box.Box--lg
-            .Progress(data-max-value="1090")
+            .Progress(data-max-value=100)
               .Progress-scrubber
+            .Audio
+              audio#test(preload="metadata")
+
+          .l-country
+
+          .l-fork--lg
+            #pause.glyphicon.glyphicon-pause.beta
+            #play.glyphicon.glyphicon-play.beta
+            #point.glyphicon.glyphicon-list.beta
+          #time.Box.gamma
+          #state.Box.beta
 
     script(src="scripts/radio-player.min.js")
 

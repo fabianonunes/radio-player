@@ -30,6 +30,11 @@ module.exports = function (data) {
     return currentTrack()
   }
 
+  var release = function () {
+    _currentIdx = -1
+    return currentTrack()
+  }
+
   var currentProgress = function (progress) {
 
     var previous = 0
@@ -81,6 +86,7 @@ module.exports = function (data) {
     composition: composition,
     search: search,
     rewind: rewind,
+    release: release,
     setTrack: setTrack,
     currentTrack: currentTrack,
     currentProgress: currentProgress
