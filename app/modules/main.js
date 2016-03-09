@@ -3,9 +3,8 @@
 var progressbar = require('./progressbar')
 var $ = require('jquery')
 
-var data = require('./fixtures/brasil-regional.json')
+var data = require('./fixtures/voz-do-brasil.json')
 var track = require('./track')(data)
-
 
 var audio = $('#test')[0]
 var progress = $('.Progress')[0]

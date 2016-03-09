@@ -1,6 +1,8 @@
 'use strict'
 
 var Eev = require('eev')
+var audiobinder = require('./lib/audiobinder')
+var _sortedIndex = require('lodash/sortedIndex')
 
 module.exports = function (audio, emitterAdapter) {
 
@@ -47,17 +49,34 @@ module.exports = function (audio, emitterAdapter) {
     emitter.emit('error', trackSet)
   }
 
-  var timeupdate = function () {
-    if (audio.paused) {
-      emitter.emit('waiting')
-    } else {
-      emitter.emit('playing')
+  var inBuffer = function (margin) {
+    var buf = audio.buffered
+    var intervals = []
+    for (var i = 0; i < buf.length; i++) {
+      intervals.push([buf.start(i), buf.end(i)])
     }
-    var progress = audio.currentTime / audio.duration
+
+    return intervals.some(function (interval) {
+      return _sortedIndex(interval, audio.currentTime + margin) === 1
+    })
+  }
+
+  var timerId
+  var timeupdate = function () {
+    clearTimeout(timerId)
+
+    emitter.emit(audio.paused ? 'waiting' : 'playing')
     emitter.emit('progress', {
-      progress: trackSet.currentProgress(progress),
+      progress: trackSet.currentProgress(audio.currentTime / audio.duration),
       currentTime: audio.currentTime
     })
+
+    timerId = setTimeout(function () {
+      if (!audio.paused) {
+        emitter.emit('waiting')
+      }
+    }, 450)
+
   }
 
   var seek = function (position) {
@@ -85,14 +104,11 @@ module.exports = function (audio, emitterAdapter) {
 
     emitter.emit('waiting')
 
-    audioEmitter.one('error', error)
-    audio.src = trackSet.currentTrack().url
-    audio.load() // necessário para o IOS
-
-    emitter.emit('cued', trackSet.currentTrack())
-
     audioEmitter
-    .one('loadedmetadata', play.bind(null, true))
+    .one('error', error)
+    .one('loadedmetadata', function () {
+      audio.play()
+    })
     .one('loadeddata', function () {
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
@@ -108,6 +124,9 @@ module.exports = function (audio, emitterAdapter) {
       bindAudioEvents()
     })
 
+    audio.src = trackSet.currentTrack().url
+    audio.load() // necessário para o IOS
+    emitter.emit('cued', trackSet.currentTrack())
   }
 
   var search = function (progress) {
@@ -145,6 +164,8 @@ module.exports = function (audio, emitterAdapter) {
     .on('waiting loadstart', function () {
       emitter.emit('waiting')
     })
+
+    audiobinder(audioEmitter)
   }
 
   emitter.play = play
@@ -157,7 +178,6 @@ module.exports = function (audio, emitterAdapter) {
       emitter.emit('state', event)
     })
   })
-
 
   return emitter
 
