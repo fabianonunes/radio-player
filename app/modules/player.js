@@ -1,30 +1,62 @@
 'use strict'
 
 var Eev = require('eev')
-var audiobinder = require('./lib/audiobinder')
-var _sortedIndex = require('lodash/sortedIndex')
 
 module.exports = function (audio, emitterAdapter) {
 
   var audioEmitter = emitterAdapter(audio)
   var emitter = new Eev()
 
-  var trackSet
+  var state
+  var disc
   var bindAudioEvents
 
+  var intervalId
+
+  var emitNewState = function (newState) {
+    if (state !== newState) {
+      emitter.emit(newState)
+    }
+  }
+
+  var lastTime
+  var loop = function () {
+    if (lastTime !== undefined) {
+      emitNewState(audio.currentTime === lastTime ? 'waiting' : 'playing')
+    }
+
+    lastTime = audio.currentTime
+  }
+
+  var watch = function (stop) {
+    clearInterval(intervalId)
+    lastTime = undefined
+    if (!stop) {
+      loop()
+      intervalId = setInterval(loop, 200)
+    }
+  }
+
   var play = function (quiet) {
-    audio.play()
-    if (quiet !== true) {
-      emitter.emit('playing')
+    if (disc) {
+      audio.play()
+      if (quiet !== true) {
+        emitter.emit('playing')
+      }
+
+      watch()
     }
   }
 
   var pause = function (quiet) {
-    audio.pause()
-    if (quiet !== true) {
-      audioEmitter.one('pause', function () {
-        emitter.emit('pause')
-      })
+    if (disc) {
+      watch(true)
+      audio.pause()
+      if (quiet !== true) {
+        audioEmitter.one('pause', function () {
+          emitter.emit('pause')
+        })
+      }
     }
   }
 
@@ -41,48 +73,29 @@ module.exports = function (audio, emitterAdapter) {
 
   var eject = function () {
     stop()
-    trackSet = null
+    disc = null
   }
 
   var error = function () {
     eject()
-    emitter.emit('error', trackSet)
+    emitter.emit('error', disc)
   }
 
-  var inBuffer = function (margin) {
-    var buf = audio.buffered
-    var intervals = []
-    for (var i = 0; i < buf.length; i++) {
-      intervals.push([buf.start(i), buf.end(i)])
-    }
-
-    return intervals.some(function (interval) {
-      return _sortedIndex(interval, audio.currentTime + margin) === 1
-    })
-  }
-
-  var timerId
   var timeupdate = function () {
-    clearTimeout(timerId)
-
-    emitter.emit(audio.paused ? 'waiting' : 'playing')
     emitter.emit('progress', {
-      progress: trackSet.currentProgress(audio.currentTime / audio.duration),
+      progress: disc.currentProgress(audio.currentTime / audio.duration),
       currentTime: audio.currentTime
     })
-
-    timerId = setTimeout(function () {
-      if (!audio.paused) {
-        emitter.emit('waiting')
-      }
-    }, 450)
-
   }
 
   var seek = function (position) {
-    emitter.emit('waiting')
     pause(true)
     audio.currentTime = position
+    setTimeout(function () {
+      if (audio.paused) {
+        emitNewState('waiting')
+      }
+    }, 20)
 
     audioEmitter.one('seeked', function () {
       // se não houver dados suficientes, o player do safari fica rodando no vazio
@@ -94,21 +107,14 @@ module.exports = function (audio, emitterAdapter) {
     })
   }
 
-  var cue = function (track, position) {
+  var cue = function (position) {
 
     audioEmitter.off()
-
-    if (!track) {
-      return error()
-    }
-
     emitter.emit('waiting')
 
     audioEmitter
     .one('error', error)
-    .one('loadedmetadata', function () {
-      audio.play()
-    })
+    .one('loadedmetadata', play)
     .one('loadeddata', function () {
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
@@ -124,37 +130,42 @@ module.exports = function (audio, emitterAdapter) {
       bindAudioEvents()
     })
 
-    audio.src = trackSet.currentTrack().url
+    audio.src = disc.currentTrack().url
     audio.load() // necessário para o IOS
-    emitter.emit('cued', trackSet.currentTrack())
+    emitter.emit('cued', disc.currentTrack())
   }
 
   var search = function (progress) {
-    pause(true)
-    var search = trackSet.search(progress)
-    if (!search.track) {
-      stop()
-    } else if (trackSet.currentTrack().idx !== search.track.idx) {
-      trackSet.setTrack(search.track.idx)
-      cue(trackSet.currentTrack(), search.position)
-    } else {
-      seek(search.position)
+    if (disc) {
+      pause(true)
+      var search = disc.search(progress)
+      if (!search.track) {
+        stop()
+      } else if (disc.currentTrack().idx !== search.track.idx) {
+        disc.setTrack(search.track.idx)
+        cue(disc.currentTrack(), search.position)
+      } else {
+        seek(search.position)
+      }
     }
   }
 
   var ended = function () {
-    var next = trackSet.next()
+    var next = disc.next()
     if (next) {
-      cue(next)
-    } else {
-      trackSet.rewind()
+      cue()
     }
   }
 
   var point = function (ts) {
     eject()
-    trackSet = ts
-    cue(trackSet.rewind())
+
+    if (!ts) {
+      return error()
+    }
+
+    disc = ts
+    cue(disc.rewind())
   }
 
   bindAudioEvents = function () {
@@ -164,17 +175,19 @@ module.exports = function (audio, emitterAdapter) {
     .on('waiting loadstart', function () {
       emitter.emit('waiting')
     })
-
-    audiobinder(audioEmitter)
   }
 
   emitter.play = play
   emitter.pause = pause
   emitter.point = point
   emitter.search = search
+  emitter.track = function () {
+    return disc
+  }
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
     emitter.on(event, function () {
+      state = event
       emitter.emit('state', event)
     })
   })

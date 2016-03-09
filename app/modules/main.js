@@ -3,7 +3,7 @@
 var progressbar = require('./progressbar')
 var $ = require('jquery')
 
-var data = require('./fixtures/voz-do-brasil.json')
+var data = require('./fixtures/brasil-regional.json')
 var track = require('./track')(data)
 
 var audio = $('#test')[0]
@@ -16,8 +16,6 @@ bar.disable()
 
 var player = require('./player')(audio, $)
 
-bar.pipes(track.composition())
-
 bar.on('change', function (data) {
   player.search(data.progress)
 })
@@ -27,7 +25,11 @@ player.on('progress', function (data) {
   $text.text(data.progress)
 })
 
-player.on('cued', bar.enable)
+player.on('cued', function () {
+  bar.enable()
+  bar.pipes(player.track().composition())
+})
+
 player.on('stop', bar.disable)
 
 player.on('state', function (state) {
