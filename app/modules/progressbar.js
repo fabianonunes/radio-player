@@ -4,17 +4,13 @@ var $ = require('jquery')
 var Eev = require('eev')
 var transformKey = require('./lib/transform-key')
 
-module.exports = function (el) {
+module.exports = function ($el) {
 
-  var $el = $(el)
   var r = new Eev()
 
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
   var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
   var scrubber = $el.find('.Progress-scrubber')[0]
-
-  var doneStyle = done.style
-  var scrubberStyle = scrubber.style
 
   var value = 0
   var scrubValue = false
@@ -46,10 +42,10 @@ module.exports = function (el) {
   var updateWidth = function () {
     var w = scrubValue !== false ? scrubValue : value
     var property = 'translateX(' + (w - 1) * 100 + '%)'
-    doneStyle[transformKey] = property
+    done.style[transformKey] = property
 
     if (scrubber) {
-      scrubberStyle[transformKey] = property
+      scrubber.style[transformKey] = property
     }
 
     if (scrubValue !== false) {
