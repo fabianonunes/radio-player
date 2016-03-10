@@ -4,15 +4,13 @@ var Eev = require('eev')
 
 module.exports = function ($audio) {
 
-  var emitter = new Eev()
-
+  var emitter      = new Eev()
   var audioEmitter = $audio
-  var audio = $audio.get(0)
+  var audio        = $audio.get(0)
 
   var state
   var disc
-
-  var bindAudioEvents
+  var on
   var cue
 
   var emitNewState = function (newState) {
@@ -22,6 +20,7 @@ module.exports = function ($audio) {
   }
 
   var lastTime
+  var intervalId
   var loop = function () {
     if (lastTime !== undefined) {
       emitNewState(audio.currentTime === lastTime ? 'waiting' : 'playing')
@@ -30,42 +29,46 @@ module.exports = function ($audio) {
     lastTime = audio.currentTime
   }
 
-  var intervalId
-  var watch = function (stop) {
+  var stopWatch = function () {
     clearInterval(intervalId)
     lastTime = undefined
-    if (!stop) {
-      loop()
-      intervalId = setInterval(loop, 200)
-    }
+  }
+
+  var watch = function () {
+    stopWatch(intervalId)
+    loop()
+    intervalId = setInterval(loop, 200)
+  }
+
+  var off = function () {
+    audioEmitter.off('.audio')
   }
 
   var play = function () {
-    if (disc) {
-      if (disc.currentTrack()) {
-        audio.play()
-        watch()
-      } else {
-        disc.rewind()
-        cue()
-      }
+    if (disc.currentTrack()) {
+      audio.play()
+      watch()
+      emitNewState('playing')
+    } else {
+      disc.rewind()
+      cue()
     }
   }
 
   var pause = function (quiet) {
     if (disc) {
-      watch(true)
+      stopWatch()
       audio.pause()
       if (quiet !== true) {
         audioEmitter.one('pause', function () {
-          emitter.emit('pause')
+          emitNewState('pause')
         })
       }
     }
   }
 
   var stop = function () {
-    audioEmitter.off()
+    off()
     if (audio.readyState > 0) {
       pause()
       audio.currentTime = 0
@@ -111,50 +114,45 @@ module.exports = function ($audio) {
     })
   }
 
-  cue = function (position) {
-
-    audioEmitter.off()
-
-    emitter.emit('waiting')
-
-    audioEmitter
-    .one('error', error)
-    .one('loadedmetadata', play)
-    .one('loadeddata', function () {
-      if (position) {
-        // android player só recupera a duração depois do primeiro timeupdate
-        if (audio.duration === 100 && audio.currentTime === 0) {
-          audioEmitter.one('timeupdate', function () {
-            seek(position)
-          })
-        } else {
-          seek(position)
-        }
-      }
-
-      bindAudioEvents()
-    })
-
+  var download = function () {
+    stop()
     audio.src = disc.currentTrack().url
     audio.load() // necessário para o IOS
+    on()
+  }
+
+  cue = function (position) {
+    download()
+    audioEmitter.one('loadedmetadata', play)
+
+    if (position) {
+      // android player só recupera a duração depois do primeiro timeupdate
+      if (audio.duration === 100 && audio.currentTime === 0) {
+        audioEmitter.one('timeupdate', function () {
+          seek(position)
+        })
+      } else {
+        seek(position)
+      }
+    }
+
+    emitter.emit('waiting')
     emitter.emit('cued', disc.currentTrack())
   }
 
   var search = function (progress) {
-    if (disc) {
-      pause(true)
-      var search = disc.search(progress)
-      if (disc.currentTrack().idx !== search.track.idx) {
-        disc.setTrack(search.track.idx)
-        cue(search.position)
-      } else {
-        seek(search.position)
-      }
+    pause(true)
+    var r = disc.search(progress)
+    if (disc.currentTrack().idx !== r.track.idx) {
+      disc.setTrack(r.track.idx)
+      cue(r.position)
+    } else {
+      seek(r.position)
     }
   }
 
   var rewind = function () {
-    watch(true)
+    stopWatch()
     disc.release()
     emitter.emit('progress', {
       progress: 0,
@@ -187,11 +185,19 @@ module.exports = function ($audio) {
     cue()
   }
 
-  bindAudioEvents = function () {
+  var toggle = function () {
+    if (state !== 'playing') {
+      play()
+    } else {
+      pause()
+    }
+  }
+
+  on = function () {
     audioEmitter
-      .on('timeupdate', timeupdate)
-      .on('ended', ended)
-      .on('waiting loadstart', function () {
+      .on('timeupdate.audio', timeupdate)
+      .on('ended.audio', ended)
+      .on('waiting.audio loadstart.audio', function () {
         emitter.emit('waiting')
       })
   }
@@ -201,6 +207,7 @@ module.exports = function ($audio) {
   emitter.load = load
   emitter.point = point
   emitter.search = search
+  emitter.toggle = toggle
   emitter.disc = function () {
     return disc
   }

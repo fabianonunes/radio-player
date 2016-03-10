@@ -67,6 +67,10 @@ module.exports = function ($el) {
     }
   }
 
+  var slide = function (v) {
+    setValue(v, true)
+  }
+
   var inputPosition = function (ev) {
     var offsetX = ev.pageX - elOffset.left
     return offsetX / componentWidth
@@ -126,6 +130,7 @@ module.exports = function ($el) {
   updateWidth()
 
   r.setValue = setValue
+  r.slide = slide
   r.maxValue = maxValue
   r.pipes = pipes
   r.enable = enable

@@ -1,6 +1,6 @@
 'use strict'
 
-var player = require('./player')
 var $ = require('jquery')
+require('./disc-player')
 
-player($('.Player:first'))
+$('.Player').discPlayer()

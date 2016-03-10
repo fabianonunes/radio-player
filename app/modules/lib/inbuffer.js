@@ -9,8 +9,6 @@ module.exports = function (audio, margin) {
     intervals.push([buf.start(i), buf.end(i)])
   }
 
-  console.log(JSON.stringify(intervals), audio.currentTime)
-
   return intervals.some(function (interval) {
     return _sortedIndex(interval, audio.currentTime + (margin || 0)) === 1
   })
