@@ -99,7 +99,10 @@ module.exports = function (data) {
     currentTrack: currentTrack,
     currentProgress: currentProgress,
     currentTime: currentTime,
-    totalTime: totalTime
+    totalTime: totalTime,
+    tracks: function () {
+      return tracks
+    }
   }
 
 }

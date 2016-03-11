@@ -32,6 +32,21 @@ var discPlayer = {
     var bar    = progressbar($bar)
     var disc   = discr(this.$el.data('disc'))
 
+    disc.tracks().forEach(function (track) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', track.url, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function () {
+        var arrayBufferView = new Uint8Array(this.response)
+        var blob = new Blob([arrayBufferView], { type: 'image/jpeg' })
+        var urlCreator = window.URL || window.webkitURL
+        track.url = urlCreator.createObjectURL(blob)
+        console.log(track)
+      }
+
+      xhr.send()
+    })
+
     bar.disable()
     bar.on('change', function (data) {
       _this.ap.search(data.progress)
