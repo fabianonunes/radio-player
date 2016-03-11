@@ -59,10 +59,12 @@ module.exports = function (data) {
     var idx = -1
     var position = 0
 
-    progress = progress * totalDuration
+    progress = Math.min(progress * totalDuration, totalDuration - 1)
 
-    tracks.map(function (t) { return t.duration }).some(function (duration, i) {
-      if (start + duration > progress) {
+    tracks
+    .map(function (t) { return t.duration })
+    .some(function (duration, i) {
+      if (start + duration >= progress) {
         idx = i
         position = progress - start
         return true
