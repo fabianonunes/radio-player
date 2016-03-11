@@ -171,6 +171,7 @@ module.exports = function ($audio) {
       cue()
     } else {
       rewind()
+      emitter.emit('ended')
     }
   }
 
