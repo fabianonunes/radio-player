@@ -1,15 +1,18 @@
+'use strict'
 
 var webpackConfig = require('../webpack.config.js')
 
 module.exports = {
-  dev: Object.assign({}, webpackConfig, {
+  options: webpackConfig,
+  dev: {
     watch: true,
     stats: {
       colors: true,
       modules: true,
       reasons: false
     },
-    devtool: 'eval'
-  }),
-  build: webpackConfig
+    devtool: 'eval',
+    debug: true
+  },
+  build: {}
 }

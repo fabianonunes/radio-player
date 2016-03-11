@@ -1,5 +1,7 @@
+'use strict'
+
 module.exports = {
-  options : {
+  options: {
     spawn: false,
     livereload: '<%= connect.options.livereload %>'
   },
@@ -14,8 +16,8 @@ module.exports = {
     ]
   },
   jade: {
-      files: ['<%= config.app %>/**/*.jade'],
-      tasks: ['jade']
+    files: ['<%= config.app %>/**/*.jade'],
+    tasks: ['jade']
   },
   javascript: {
     files: [
