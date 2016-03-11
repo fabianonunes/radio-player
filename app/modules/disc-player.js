@@ -1,12 +1,15 @@
 'use strict'
 
 var $            = require('jquery')
+var qwest        = require('qwest')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
 var discr        = require('./disc')
 
 var pluginName   = 'discPlayer'
 var defaults     = {}
+
+qwest.limit(1)
 
 var discPlayer = {
 
@@ -32,20 +35,21 @@ var discPlayer = {
     var bar    = progressbar($bar)
     var disc   = discr(this.$el.data('disc'))
 
-    disc.tracks().forEach(function (track) {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', track.url, true);
-      xhr.responseType = 'arraybuffer';
-      xhr.onload = function () {
-        var arrayBufferView = new Uint8Array(this.response)
-        var blob = new Blob([arrayBufferView], { type: 'image/jpeg' })
-        var urlCreator = window.URL || window.webkitURL
-        track.url = urlCreator.createObjectURL(blob)
-        console.log(track)
-      }
+    var opts   = { responseType: 'blob', cache: true }
 
-      xhr.send()
+    disc.tracks().forEach(function (track) {
+
+      qwest.get(track.url, null, opts, function (xhr) {
+        xhr.onprogress = _this.download.bind(_this)
+      })
+      .then(function (xhr, response) {
+        track.url = URL.createObjectURL(response)
+        $knob.prop('disabled', false)
+      })
+
     })
+
+    $knob.prop('disabled', true)
 
     bar.disable()
     bar.on('change', function (data) {
@@ -85,6 +89,10 @@ var discPlayer = {
 
   stop: function () {
     this.ap.pause()
+  },
+
+  download: function (e) {
+
   }
 }
 
