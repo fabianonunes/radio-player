@@ -38,10 +38,9 @@ var discPlayer = {
       _this.ap.search(data.progress)
     })
 
-    this.ap.on('progress', _throttle(function (data) {
-      console.log(data)
+    this.ap.on('progress', function (data) {
       bar.slide(data.progress)
-    }, 1000))
+    })
 
     this.ap.on('state', function (state) {
       if (state === 'playing') {
