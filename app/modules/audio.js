@@ -1,6 +1,7 @@
 'use strict'
 
 var Eev = require('eev')
+var helpers = require('./lib/helpers')
 
 module.exports = function ($audio) {
 
@@ -89,9 +90,11 @@ module.exports = function ($audio) {
   }
 
   var timeupdate = function () {
+    var progress = audio.currentTime / audio.duration
     emitter.emit('progress', {
-      progress: disc.currentProgress(audio.currentTime / audio.duration),
-      currentTime: audio.currentTime
+      progress: disc.currentProgress(progress),
+      currentTime: helpers.secondsToTime(disc.currentTime(progress)),
+      totalTime: helpers.secondsToTime(disc.totalTime())
     })
   }
 
@@ -116,6 +119,7 @@ module.exports = function ($audio) {
 
   var download = function () {
     stop()
+    audioEmitter.one('error', error)
     audio.src = disc.currentTrack().url
     audio.load() // necessário para o IOS
     on()

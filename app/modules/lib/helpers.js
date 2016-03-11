@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = {
-  _secondsToTime: function (time) {
+  secondsToTime: function (time) {
     var h = time / 3600
     var m = h % 1 * 60
     var s = m % 1 * 60

@@ -1,7 +1,5 @@
 'use strict'
 
-var _map = require('lodash/map')
-
 module.exports = function (data) {
 
   var _currentIdx = 0
@@ -47,6 +45,14 @@ module.exports = function (data) {
 
   }
 
+  var currentTime = function (progress) {
+    return currentProgress(progress) * totalDuration
+  }
+
+  var totalTime = function () {
+    return totalDuration
+  }
+
   var search = function (progress) {
 
     var start = 0
@@ -55,7 +61,7 @@ module.exports = function (data) {
 
     progress = progress * totalDuration
 
-    _map(tracks, 'duration').some(function (duration, i) {
+    tracks.map(function (t) { return t.duration }).some(function (duration, i) {
       if (start + duration > progress) {
         idx = i
         position = progress - start
@@ -74,7 +80,7 @@ module.exports = function (data) {
 
   var composition = function () {
     var start = 0
-    return _map(tracks, 'duration').map(function (duration) {
+    return tracks.map(function (t) { return t.duration }).map(function (duration) {
       var retval = start / totalDuration
       start += duration
       return retval
@@ -89,7 +95,9 @@ module.exports = function (data) {
     release: release,
     setTrack: setTrack,
     currentTrack: currentTrack,
-    currentProgress: currentProgress
+    currentProgress: currentProgress,
+    currentTime: currentTime,
+    totalTime: totalTime
   }
 
 }
