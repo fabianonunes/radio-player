@@ -18,19 +18,21 @@ module.exports = function ($el) {
   var elOffset
   var enabled = false
 
-  var maxValue = function (v) {
+  var valueMax = function (v) {
     if (v) {
-      $el.data('maxValue', v)
+      $el.attr('aria-valuemax', Math.round(v))
     }
 
-    return $el.data('maxValue')
+    return $el.attr('aria-valuemax')
   }
 
   var change = function (slide) {
+    var valueNow = value * valueMax()
     r.emit(slide ? 'slide' : 'change', {
-      value: value * maxValue(),
+      value: valueNow,
       progress: value
     })
+    $el.attr('aria-valuenow', Math.round(valueNow))
   }
 
   var relayout = function () {
@@ -77,6 +79,7 @@ module.exports = function ($el) {
   }
 
   var click = function (ev) {
+    $el.focus()
     relayout()
     setValue(inputPosition(ev))
     updateWidth()
@@ -89,6 +92,7 @@ module.exports = function ($el) {
 
   var touchstart = function (ev) {
     // TODO: adicionar classe que avisa o dragging
+    $el.focus()
     relayout()
     touchmove(ev)
     requestAnimationFrame(updateWidth)
@@ -106,6 +110,18 @@ module.exports = function ($el) {
     composition.forEach(function (sect) {
       $('<span class="Progress-pipe"></span>').css({ left: sect * 100 + '%' }).appendTo($el)
     })
+  }
+
+  var keydown = function (ev) {
+    switch (ev.keyCode) {
+      case 39:
+        setValue(value + 0.05)
+        break
+      case 37:
+        setValue(value - 0.05)
+        break
+      default:
+    }
   }
 
   var disable = function () {
@@ -126,17 +142,7 @@ module.exports = function ($el) {
       .on('touchstart.progress', touchstart)
       .on('touchmove.progress', touchmove)
       .on('touchend.progress', touchend)
-      .on('keydown.progress', function (ev) {
-        switch (ev.keyCode) {
-          case 39:
-            setValue(value + 0.05)
-            break
-          case 37:
-            setValue(value - 0.05)
-            break
-          default:
-        }
-      })
+      .on('keydown.progress', keydown)
 
     enabled = true
   }
@@ -146,7 +152,7 @@ module.exports = function ($el) {
 
   r.setValue = setValue
   r.slide = slide
-  r.maxValue = maxValue
+  r.valueMax = valueMax
   r.pipes = pipes
   r.enable = enable
   r.disable = disable

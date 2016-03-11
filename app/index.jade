@@ -22,7 +22,7 @@ html(lang='pt')
               .l-island
                 button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta(data-state='pause')
             .Flag-body
-              .Progress(data-max-value=100 tabindex=0)
+              .Progress(role="progressbar" aria-valuemin=0 aria-valuemax=100 tabindex=0)
                 .Progress-scrubber
               audio(preload="auto")
 

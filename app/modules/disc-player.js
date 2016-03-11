@@ -48,6 +48,7 @@ var discPlayer = {
     })
 
     this.ap.on('cued', function () {
+      bar.valueMax(_this.ap.disc().totalTime())
       bar.enable()
       bar.pipes(_this.ap.disc().composition())
     })
