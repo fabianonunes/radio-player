@@ -2,7 +2,7 @@
   "name": "package",
   "version": "0.0.0",
   "devDependencies": {
-    "babel-core": "^6.6.5",
+    "babel-core": "^6.7.2",
     "babel-loader": "^6.2.0",
     "babel-preset-es2015": "^6.1.8",
     "design.shell": "https://github.com/fabianonunes/design.shell.git#1.2.0",
