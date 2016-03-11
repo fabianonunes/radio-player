@@ -4,7 +4,6 @@ var $            = require('jquery')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
 var discr        = require('./disc')
-var _throttle    = require('lodash/throttle')
 
 var pluginName   = 'discPlayer'
 var defaults     = {}
