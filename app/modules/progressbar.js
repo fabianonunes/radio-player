@@ -109,7 +109,9 @@ module.exports = function ($el) {
   }
 
   var disable = function () {
-    $el.off('.progress')
+    $el
+      .off('.progress')
+      .attr('tabindex', '-1')
     enabled = false
   }
 
@@ -119,10 +121,23 @@ module.exports = function ($el) {
     }
 
     $el
+      .attr('tabindex', '0')
       .on('click.progress', click)
       .on('touchstart.progress', touchstart)
       .on('touchmove.progress', touchmove)
       .on('touchend.progress', touchend)
+      .on('keydown.progress', function (ev) {
+        switch (ev.keyCode) {
+          case 39:
+            setValue(value + 0.05)
+            break
+          case 37:
+            setValue(value - 0.05)
+            break
+          default:
+        }
+      })
+
     enabled = true
   }
 
