@@ -11,7 +11,7 @@ module.exports = {
     filename: '[name].min.js'
   },
   externals: {
-    // jquery: 'jQuery'
+    jquery: 'jQuery'
   },
   module: {
     loaders: [
