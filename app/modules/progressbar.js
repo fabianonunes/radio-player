@@ -91,7 +91,6 @@ module.exports = function ($el) {
   }
 
   var touchstart = function (ev) {
-    // TODO: adicionar classe que avisa o dragging
     $el.focus()
     relayout()
     touchmove(ev)
@@ -100,9 +99,9 @@ module.exports = function ($el) {
   }
 
   var touchend = function () {
-    // TODO: remover classe que avisa o dragging
     setValue(scrubValue)
     scrubValue = false
+    $el.blur()
   }
 
   var pipes = function (composition) {
