@@ -1,3 +1,4 @@
+/* global Promise */
 'use strict'
 
 var $            = require('jquery')
@@ -8,8 +9,6 @@ var discr        = require('./disc')
 
 var pluginName   = 'discPlayer'
 var defaults     = {}
-
-qwest.limit(1)
 
 var discPlayer = {
 
@@ -24,29 +23,55 @@ var discPlayer = {
 
   _build: function () {
 
-    var _this  = this
+    var _this       = this
 
-    var $knob  = this.$el.find('.Player-knob:first')
-    var $audio = this.$el.find('audio:first')
-    var $bar   = this.$el.find('.Progress:first')
+    var $knob       = this.$el.find('.Player-knob:first')
+    var $audio      = this.$el.find('audio:first')
+    var $bar        = this.$el.find('.js-audioprogress:first')
+    var $download   = this.$el.find('.js-downloadprogress:first')
 
-    _this.ap   = audioPlayer($audio)
+    _this.ap        = audioPlayer($audio)
 
-    var bar    = progressbar($bar)
-    var disc   = discr(this.$el.data('disc'))
+    var bar         = progressbar($bar)
+    var disc        = discr(this.$el.data('disc'))
 
-    var opts   = { responseType: 'blob', cache: true }
+    var opts        = { responseType: 'arraybuffer', cache: true }
 
-    disc.tracks().forEach(function (track) {
+    var download    = $download.length && progressbar($download)
+    if (download) {
+      download.enable(true)
+    }
 
-      qwest.get(track.url, null, opts, function (xhr) {
-        xhr.onprogress = _this.download.bind(_this)
+    var first = Promise.resolve(1)
+    var trackdownloads = disc.tracks().map(function (track, i, array) {
+      var q = 1 / array.length
+      first = first.then(function () {
+        return qwest.get(track.url, null, opts, function (xhr) {
+          xhr.onprogress = function (e) {
+            if (download) {
+              var v = q * e.loaded / e.total
+              download.setValue(v + q * i)
+            }
+          }
+        }).then(function (results) {
+          var arrayBufferView = new Uint8Array(results.response)
+          var blob = new Blob([arrayBufferView], { type: 'audio/mpeg' })
+          return {
+            track: track,
+            response: blob
+          }
+        })
       })
-      .then(function (xhr, response) {
-        track.url = URL.createObjectURL(response)
+
+      return first
+    })
+
+    Promise.all(trackdownloads).then(function (results) {
+      $download.hide()
+      results.forEach(function (result) {
+        result.track.url = URL.createObjectURL(result.response)
         $knob.prop('disabled', false)
       })
-
     })
 
     $knob.prop('disabled', true)
@@ -91,8 +116,8 @@ var discPlayer = {
     this.ap.pause()
   },
 
-  download: function (e) {
-
+  download: function () {
+    console.log()
   }
 }
 
