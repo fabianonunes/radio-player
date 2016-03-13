@@ -17,8 +17,7 @@
   }
 
   &:focus {
-    outline: 2px solid #eee;
-    outline-offset: 10px;
+    outline: none;
   }
 }
 
@@ -69,6 +68,11 @@
       box-shadow: 0 0 2px rgba(0,0,0,.5);
     }
     z-index: 2;
+
+    .Progress:focus &:after {
+      box-shadow: 0 0 0 6px fadeout(@azul-padrao, 80%)
+    }
+
   }
 
   .Progress-pipe {
