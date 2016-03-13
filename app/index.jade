@@ -8,7 +8,7 @@ html(lang='pt')
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no')
 
     link(href='https://fonts.googleapis.com/css?family=Josefin+Sans:100' rel='stylesheet' type='text/css')
-    link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css' rel='stylesheet' type='text/css')
+    link(href='/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet' type='text/css')
 
     link(href='styles/main.css', rel='stylesheet')
 
@@ -17,12 +17,15 @@ html(lang='pt')
     .container
       .row
         .col-xs-12
+          .l-island
           .Flag.Player(data-disc='{"id":"b17958ab-8a98-4e28-a0e5-399471868508","title":"Brasil Regional","duration":1620.3915,"tracks":[{"duration":731.22756249999998,"url":"/assets/audio/dc9b16f6-2f4e-42ff-9532-219c7fb24703.mp3","title":"1ª parte"},{"duration":889.16393749999997,"url":"/assets/audio/baf06483-4043-4cb6-b814-abadd86452c3.mp3","title":"2ª parte"}]}')
-            .Flag-figure
-              .l-island
-                button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta(data-state='pause')
+
+            .Flag-figure.delta
+              button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta(data-state='pause')
+                .Progress.js-downloadprogress(role="progressbar" data-inert="true" aria-valuemin=0 aria-valuemax=100)
+
             .Flag-body
-              .Progress(role="progressbar" aria-valuemin=0 aria-valuemax=100 tabindex=0)
+              .Progress.js-audioprogress(role="progressbar" aria-valuemin=0 aria-valuemax=100 tabindex=-1)
                 .Progress-scrubber
               audio(preload="auto")
 
@@ -30,14 +33,13 @@ html(lang='pt')
 
           .Flag.Player(data-disc='{"id":"b17958ab-8a98-4e28-a0e5-399471868508","title":"Brasil Regional","duration":731.22756249999998,"tracks":[{"duration":731.22756249999998,"url":"/assets/audio/dc9b16f6-2f4e-42ff-9532-219c7fb24703.mp3","title":"1ª parte"}]}')
             .Flag-figure
-              .l-island
-                button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta(data-state='pause')
+              button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta(data-state='pause')
+                .Progress.js-downloadprogress(role="progressbar" data-inert="true" aria-valuemin=0 aria-valuemax=100 tabindex=-1)
+
             .Flag-body
-              .Progress(data-max-value=100 tabindex=0)
+              .Progress.js-audioprogress(data-max-value=100 tabindex=0)
                 .Progress-scrubber
               audio(preload="auto")
 
+    script(src="jquery/dist/jquery.min.js")
     script(src="scripts/radio-player.min.js")
-
-
-
