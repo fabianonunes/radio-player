@@ -162,6 +162,9 @@ module.exports = function ($el) {
   r.pipes = pipes
   r.enable = enable
   r.disable = disable
+  r.value = function () {
+    return value
+  }
 
   return r
 }
