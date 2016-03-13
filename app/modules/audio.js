@@ -117,30 +117,29 @@ module.exports = function ($audio) {
     })
   }
 
-  var download = function () {
-    stop()
+  cue = function (position) {
+    off()
+    emitter.emit('waiting')
+
     audioEmitter.one('error', error)
+    audioEmitter.one('loadedmetadata', play)
+    audioEmitter.one('loadeddata', function () {
+      if (position) {
+        // android player só recupera a duração depois do primeiro timeupdate
+        if (audio.duration === 100 && audio.currentTime === 0) {
+          audioEmitter.one('timeupdate', function () {
+            seek(position)
+          })
+        } else {
+          seek(position)
+        }
+      }
+
+      on()
+    })
+
     audio.src = disc.currentTrack().url
     audio.load() // necessário para o IOS
-    on()
-  }
-
-  cue = function (position) {
-    download()
-    audioEmitter.one('loadedmetadata', play)
-
-    if (position) {
-      // android player só recupera a duração depois do primeiro timeupdate
-      if (audio.duration === 100 && audio.currentTime === 0) {
-        audioEmitter.one('timeupdate', function () {
-          seek(position)
-        })
-      } else {
-        seek(position)
-      }
-    }
-
-    emitter.emit('waiting')
     emitter.emit('cued', disc.currentTrack())
   }
 
