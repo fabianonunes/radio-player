@@ -124,9 +124,11 @@ module.exports = function ($el) {
   }
 
   var disable = function () {
-    $el
-      .off('.progress')
-      .attr('tabindex', '-1')
+    $el.off('.progress')
+    if ($el.is('[tabindex]')) {
+      $el.attr('tabindex', '-1')
+    }
+
     enabled = false
   }
 
@@ -135,13 +137,18 @@ module.exports = function ($el) {
       return
     }
 
-    $el
-      .attr('tabindex', '0')
-      .on('click.progress', click)
-      .on('touchstart.progress', touchstart)
-      .on('touchmove.progress', touchmove)
-      .on('touchend.progress', touchend)
-      .on('keydown.progress', keydown)
+    if (inert !== true) {
+      $el
+        .on('click.progress', click)
+        .on('touchstart.progress', touchstart)
+        .on('touchmove.progress', touchmove)
+        .on('touchend.progress', touchend)
+        .on('keydown.progress', keydown)
+    }
+
+    if ($el.is('[tabindex]')) {
+      $el.attr('tabindex', '0')
+    }
 
     enabled = true
   }
