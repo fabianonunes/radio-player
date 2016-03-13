@@ -131,7 +131,7 @@ module.exports = function ($el) {
     enabled = false
   }
 
-  var enable = function () {
+  var enable = function (inert) {
     if (enabled) {
       return
     }
@@ -147,7 +147,7 @@ module.exports = function ($el) {
     enabled = true
   }
 
-  enable()
+  enable($el.data('inert'))
   updateWidth()
 
   r.setValue = setValue
