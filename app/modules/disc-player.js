@@ -2,10 +2,12 @@
 
 var $            = require('jquery')
 var pinkyswear   = require('pinkyswear')
+
 var downloader   = require('./lib/track-download')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
 var discr        = require('./disc')
+var hasBlob      = require('./lib/has-blob')
 
 var pluginName   = 'discPlayer'
 var defaults     = {}
@@ -71,7 +73,10 @@ var discPlayer = {
       }
     })
 
-    this.download()
+    if (hasBlob) {
+      this.download()
+    }
+
   },
 
   stop: function () {
