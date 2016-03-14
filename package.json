@@ -34,6 +34,7 @@
     "json-loader": "0.5.4",
     "lodash": "4.6.1",
     "qwest": "4.1.1",
+    "raf": "^3.2.0",
     "smokesignals": "1.0.2",
     "telegraph": "0.8.22",
     "whatwg-fetch": "0.11.0"
