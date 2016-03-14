@@ -1,7 +1,7 @@
-/* global Promise */
 'use strict'
 
 var $            = require('jquery')
+var pinkyswear   = require('pinkyswear')
 var downloader   = require('./lib/track-download')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
@@ -82,7 +82,7 @@ var discPlayer = {
 
     var _this       = this
     var $download   = this.$el.find('.js-downloadprogress:first')
-    var opts        = { responseType: 'blob', cache: true }
+    var opts        = { responseType: 'blob', cache: true, timeout: 9e10 }
 
     this.$knob.prop('disabled', true)
     this.$knob.attr('data-state', 'downloading')
@@ -93,7 +93,8 @@ var discPlayer = {
       downloadbar.enable(true)
     }
 
-    var first = Promise.resolve(1)
+    var first = pinkyswear()
+    first(true)
     this.disc.tracks().forEach(function (track, i, array) {
       var q = 1 / array.length
 
