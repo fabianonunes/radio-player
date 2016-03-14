@@ -3,6 +3,7 @@
 var $ = require('jquery')
 var Eev = require('eev')
 var transformKey = require('./lib/transform-key')
+var raf = require('raf')
 
 module.exports = function ($el) {
 
@@ -51,7 +52,7 @@ module.exports = function ($el) {
     }
 
     if (scrubValue !== false) {
-      requestAnimationFrame(updateWidth)
+      raf(updateWidth)
     }
   }
 
@@ -64,7 +65,7 @@ module.exports = function ($el) {
       value = normalizeInput(v)
       change(slide)
       if (scrubValue === false) {
-        requestAnimationFrame(updateWidth)
+        raf(updateWidth)
       }
     }
   }
@@ -94,7 +95,7 @@ module.exports = function ($el) {
     $el.focus()
     relayout()
     touchmove(ev)
-    requestAnimationFrame(updateWidth)
+    raf(updateWidth)
     ev.preventDefault()
   }
 
