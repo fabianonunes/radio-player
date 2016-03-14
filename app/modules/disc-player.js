@@ -106,9 +106,9 @@ var discPlayer = {
             downloadbar.setValue(v + q * i)
           }
         })
-        .then(function (blob) {
-          track.url = URL.createObjectURL(blob)
-        })
+      })
+      .then(function (blob) {
+        track.url = URL.createObjectURL(blob)
       })
 
     })
