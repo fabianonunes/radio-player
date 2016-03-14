@@ -1,3 +1,5 @@
+'use strict'
+
 module.exports = {
   options: {
     port: 8000,
@@ -6,9 +8,9 @@ module.exports = {
   },
   dev: {
     options: {
-      middleware: function(connect, options, middlewares) {
+      middleware: function (connect, options, middlewares) {
 
-        middlewares.unshift(function(req, res, next) {
+        middlewares.unshift(function (req, res, next) {
           res.setHeader('Access-Control-Allow-Origin', '*')
           res.setHeader('Access-Control-Allow-Methods', '*')
           next()
