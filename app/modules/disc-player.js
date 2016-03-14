@@ -2,7 +2,7 @@
 'use strict'
 
 var $            = require('jquery')
-var qwest        = require('qwest')
+var downloader   = require('./lib/track-download')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
 var discr        = require('./disc')
@@ -28,53 +28,13 @@ var discPlayer = {
     var $knob       = this.$el.find('.Player-knob:first')
     var $audio      = this.$el.find('audio:first')
     var $bar        = this.$el.find('.js-audioprogress:first')
-    var $download   = this.$el.find('.js-downloadprogress:first')
+
+    var disc        = discr(this.$el.data('disc'))
+    var bar         = progressbar($bar)
 
     _this.ap        = audioPlayer($audio)
-
-    var bar         = progressbar($bar)
-    var disc        = discr(this.$el.data('disc'))
-
-    var opts        = { responseType: 'arraybuffer', cache: true }
-
-    var download    = $download.length && progressbar($download)
-    if (download) {
-      download.enable(true)
-    }
-
-    var first = Promise.resolve(1)
-    var trackdownloads = disc.tracks().map(function (track, i, array) {
-      var q = 1 / array.length
-      first = first.then(function () {
-        return qwest.get(track.url, null, opts, function (xhr) {
-          xhr.onprogress = function (e) {
-            if (download) {
-              var v = q * e.loaded / e.total
-              download.setValue(v + q * i)
-            }
-          }
-        }).then(function (results) {
-          var arrayBufferView = new Uint8Array(results.response)
-          var blob = new Blob([arrayBufferView], { type: 'audio/mpeg' })
-          return {
-            track: track,
-            response: blob
-          }
-        })
-      })
-
-      return first
-    })
-
-    Promise.all(trackdownloads).then(function (results) {
-      $download.hide()
-      results.forEach(function (result) {
-        result.track.url = URL.createObjectURL(result.response)
-        $knob.prop('disabled', false)
-      })
-    })
-
-    $knob.prop('disabled', true)
+    _this.$knob     = $knob
+    _this.disc      = disc
 
     bar.disable()
     bar.on('change', function (data) {
@@ -110,6 +70,8 @@ var discPlayer = {
         _this.ap.toggle()
       }
     })
+
+    this.download()
   },
 
   stop: function () {
@@ -117,7 +79,44 @@ var discPlayer = {
   },
 
   download: function () {
-    console.log()
+
+    var _this       = this
+    var $download   = this.$el.find('.js-downloadprogress:first')
+    var opts        = { responseType: 'blob', cache: true }
+
+    this.$knob.prop('disabled', true)
+    this.$knob.attr('data-state', 'downloading')
+
+    var downloadbar    = $download.length && progressbar($download)
+    if (downloadbar) {
+      $download.removeClass('hidden')
+      downloadbar.enable(true)
+    }
+
+    var first = Promise.resolve(1)
+    this.disc.tracks().forEach(function (track, i, array) {
+      var q = 1 / array.length
+
+      first = first.then(function () {
+        return downloader(track.url, opts, function (e) {
+          if (downloadbar) {
+            var v = q * e.loaded / e.total
+            downloadbar.setValue(v + q * i)
+          }
+        })
+        .then(function (blob) {
+          track.url = URL.createObjectURL(blob)
+        })
+      })
+
+    })
+
+    first.then(function () {
+      $download.hide()
+      _this.$knob.attr('data-state', 'paused')
+      _this.$knob.prop('disabled', false)
+    })
+
   }
 }
 

@@ -101,13 +101,15 @@ module.exports = function ($audio) {
   var seek = function (position) {
     pause(true)
     audio.currentTime = position
-    setTimeout(function () {
+    var waitingId = setTimeout(function () {
       if (audio.paused) {
         emitNewState('waiting')
       }
-    }, 20)
+    }, 50)
 
     audioEmitter.one('seeked', function () {
+      clearTimeout(waitingId)
+
       // se não houver dados suficientes, o player do safari fica rodando no vazio
       if (audio.readyState < 3) {
         audioEmitter.one('canplay', play)
@@ -119,11 +121,17 @@ module.exports = function ($audio) {
 
   cue = function (position) {
     off()
-    emitter.emit('waiting')
+
+    var waitingId = setTimeout(function () {
+      if (audio.paused) {
+        emitNewState('waiting')
+      }
+    }, 50)
 
     audioEmitter.one('error', error)
     audioEmitter.one('loadedmetadata', play)
     audioEmitter.one('loadeddata', function () {
+      clearTimeout(waitingId)
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
         if (audio.duration === 100 && audio.currentTime === 0) {

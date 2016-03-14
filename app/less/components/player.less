@@ -10,10 +10,24 @@
     }
   }
 
+  .Player-knob[data-state="downloading"] {
+    &:before {
+      content: ' '
+    }
+  }
+
   .Player-knob {
+    > .Loader {
+      display: none;
+    }
     .glyphicon-play();
   }
 
   .Player-knob[data-state="waiting"] {
-    .glyphicon-hourglass();
+    &:before {
+      display: none;
+    }
+    > .Loader {
+      display: block;
+    }
   }
