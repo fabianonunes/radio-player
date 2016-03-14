@@ -25,6 +25,11 @@ module.exports = {
       __dirname + '/app/modules'
     ]
   },
+  node: {
+    process: false,
+    Buffer: false,
+    setImmediate: false
+  },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({
       sourceMap: false,
