@@ -2,6 +2,7 @@
 'use strict'
 
 var $            = require('jquery')
+var pinkySwear   = require('pinkyswear')
 var downloader   = require('./lib/track-download')
 var progressbar  = require('./progressbar')
 var audioPlayer  = require('./audio')
@@ -93,7 +94,8 @@ var discPlayer = {
       downloadbar.enable(true)
     }
 
-    var first = Promise.resolve(1)
+    var first = pinkySwear()
+    first(true)
     this.disc.tracks().forEach(function (track, i, array) {
       var q = 1 / array.length
 
