@@ -14,9 +14,10 @@ module.exports = function ($audio) {
   var on
   var cue
 
-  var emitNewState = function (newState) {
+  var emitNewState = function (newState, delay) {
     if (state !== newState) {
-      emitter.emit(newState)
+      var f = emitter.emit.bind(emitter, newState)
+      return delay ? setTimeout(f, delay) : f()
     }
   }
 
@@ -61,7 +62,7 @@ module.exports = function ($audio) {
       stopWatch()
       audio.pause()
       if (quiet !== true) {
-        audioEmitter.one('pause', function () {
+        audioEmitter.one('pause.audio', function () {
           emitNewState('pause')
         })
       }
@@ -101,18 +102,14 @@ module.exports = function ($audio) {
   var seek = function (position) {
     pause(true)
     audio.currentTime = position
-    var waitingId = setTimeout(function () {
-      if (audio.paused) {
-        emitNewState('waiting')
-      }
-    }, 50)
+    var waitingId = emitNewState('waiting', 50)
 
-    audioEmitter.one('seeked', function () {
+    audioEmitter.one('seeked.audio', function () {
       clearTimeout(waitingId)
 
       // se não houver dados suficientes, o player do safari fica rodando no vazio
       if (audio.readyState < 3) {
-        audioEmitter.one('canplay', play)
+        audioEmitter.one('canplay.audio', play)
       } else {
         play()
       }
@@ -122,20 +119,17 @@ module.exports = function ($audio) {
   cue = function (position) {
     off()
 
-    var waitingId = setTimeout(function () {
-      if (audio.paused) {
-        emitNewState('waiting')
-      }
-    }, 50)
+    var waitingId = emitNewState('waiting', 50)
 
-    audioEmitter.one('error', error)
-    audioEmitter.one('loadedmetadata', play)
-    audioEmitter.one('loadeddata', function () {
+    audioEmitter
+    .one('error.audio', error)
+    .one('loadedmetadata.audio', play)
+    .one('loadeddata.audio', function () {
       clearTimeout(waitingId)
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
         if (audio.duration === 100 && audio.currentTime === 0) {
-          audioEmitter.one('timeupdate', function () {
+          audioEmitter.one('timeupdate.audio', function () {
             seek(position)
           })
         } else {
