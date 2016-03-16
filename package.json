@@ -1,6 +1,6 @@
 {
-  "name": "package",
-  "version": "0.0.0",
+  "name": "radio-player",
+  "version": "0.0.1",
   "devDependencies": {
     "grunt": "0.4.5",
     "grunt-autoprefixer": "^3.0.4",
@@ -28,7 +28,6 @@
     "bootstrap": "^3.3.6",
     "eev": "0.0.4",
     "jquery": "^2.2.1",
-    "lodash": "4.6.1",
     "qwest": "^4.2.1",
     "raf": "^3.2.0"
   }
