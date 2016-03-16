@@ -1,4 +1,5 @@
-@import "vendors/bootstrap";
+@import (reference) "vendors/bootstrap";
+
 @import "vendors/senado";
 @import "utils/variables";
 
@@ -10,59 +11,8 @@
 
 @scrubber-width: 12px;
 
-.Progress {
-  position: relative;
-  background: @c2;
-  height: 6px;
-  margin-left: @scrubber-width / 2;
-  margin-right: @scrubber-width / 2;
+@import "layout/overflow";
 
-  &:before {
-    content: ".";
-    text-indent: -9999px;
-    left: 0;
-    right: 0;
-    bottom: -10px;
-    top: -10px;
-    position: absolute;
-  }
-}
-
-  .Progress-bar {
-    height: 100%;
-    overflow-x: hidden;
-  }
-
-    .Progress-done {
-      height: 100%;
-      background: @c4;
-      will-change: transform;
-      transform: translateX(0%);
-      transform-origin: 0 0;
-    }
-
-  .Progress-scrubber {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-
-    &:after {
-      content: ' ';
-      display: block;
-      position: absolute;
-      right: -@scrubber-width / 2;
-
-      height: @scrubber-width;
-      width: @scrubber-width;
-
-      top: 50%;
-      will-change: transform;
-      transform: translateY(-50%);
-
-      border: 2px solid #fff;
-      border-radius: 50%;
-      background: #EEE;
-      box-shadow: 0 0 2px rgba(0,0,0,.5);
-    }
-  }
+@import "components/progress";
+@import "components/player";
+@import "components/loader";

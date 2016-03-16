@@ -1,0 +1,84 @@
+
+.Progress {
+  position: relative;
+  background: @c2;
+  height: 6px;
+  margin-left: @scrubber-width / 2;
+  margin-right: @scrubber-width / 2;
+
+  &:before {
+    content: ".";
+    text-indent: -9999px;
+    left: 0;
+    right: 0;
+    bottom: -10px;
+    top: -10px;
+    position: absolute;
+  }
+
+  &:focus {
+    outline: none;
+  }
+}
+
+  .Progress-bar {
+    height: 100%;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 1;
+  }
+
+    .Progress-done {
+      height: 100%;
+      background: @c4;
+
+      will-change: transform;
+      transform: translateX(-100%);
+      transform-origin: 0 0;
+
+      z-index: 1;
+    }
+
+  .Progress-scrubber {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+
+    pointer-events: none;
+
+    will-change: transform;
+    transform: translateX(-100%);
+
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      right: -@scrubber-width / 2;
+
+      height: @scrubber-width;
+      width: @scrubber-width;
+
+      top: 50%;
+      transform: translateY(-50%);
+
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background: #EEE;
+      box-shadow: 0 0 2px rgba(0,0,0,.5);
+    }
+    z-index: 2;
+
+    .Progress:focus &:after {
+      box-shadow: 0 0 0 6px fadeout(@azul-padrao, 80%)
+    }
+
+  }
+
+  .Progress-pipe {
+    position: absolute;
+    background: @c1;
+    height: 100%;
+    width: 2px;
+    top: 0;
+  }

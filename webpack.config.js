@@ -11,11 +11,12 @@ module.exports = {
     filename: '[name].min.js'
   },
   externals: {
-    // jquery : 'jQuery'
+    jquery: 'jQuery'
   },
   module: {
     loaders: [
-      { test: /\.jade$/, loader: 'jade-loader' }
+      { test: /\.jade$/, loader: 'jade' },
+      { test: /\.json$/, loader: 'json' }
     ]
   },
   resolve: {
@@ -23,6 +24,11 @@ module.exports = {
       'node_modules',
       __dirname + '/app/modules'
     ]
+  },
+  node: {
+    process: false,
+    Buffer: false,
+    setImmediate: false
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({

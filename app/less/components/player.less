@@ -1,0 +1,33 @@
+.Player {}
+
+  .Player-knob[data-state="playing"] {
+    .glyphicon-pause();
+  }
+
+  .Player-knob[data-state="error"] {
+    &:before {
+      content: '\1F62D'
+    }
+  }
+
+  .Player-knob[data-state="downloading"] {
+    &:before {
+      content: ' '
+    }
+  }
+
+  .Player-knob {
+    > .Loader {
+      display: none;
+    }
+    .glyphicon-play();
+  }
+
+  .Player-knob[data-state="waiting"] {
+    &:before {
+      display: none;
+    }
+    > .Loader {
+      display: block;
+    }
+  }

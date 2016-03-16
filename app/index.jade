@@ -6,23 +6,46 @@ html(lang='pt')
     meta(http-equiv='X-UA-Compatible', content='IE=edge')
     title
     meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no')
-    link(href='styles/main.css', rel='stylesheet')
 
-    link(href='https://fonts.googleapis.com/css?family=Josefin+Sans:100' rel='stylesheet' type='text/css')
-    style.
-      * { font-family: 'Josefin Sans', sans-serif; font-weight: 100; }
-      .logo { height: calc(100vh - 110px); }
+    link(href='styles/vendors.css', rel='stylesheet')
+    link(href='styles/main.css', rel='stylesheet')
 
   body#sfcss
 
     .container
       .row
         .col-xs-12
-          .Box.Box--lg
-            .Progress(data-max-value="344")
-              .Progress-scrubber
 
+          p.beta
+            | multi track
+
+          .Flag.Player(data-disc='{"id":"b17958ab-8a98-4e28-a0e5-399471868508","title":"Brasil Regional","duration":1740,"tracks":[{"duration":822,"url":"/assets/audio/2.mp3","title":"1ª parte"},{"duration":918,"url":"/assets/audio/1.mp3","title":"2ª parte"}]}')
+
+            .Flag-figure.delta
+              button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta
+                .Loader
+                .Progress.js-downloadprogress.hidden(role="progressbar" data-inert="true")
+
+            .Flag-body
+              .Progress.js-audioprogress(role="progressbar" tabindex=-1)
+                .Progress-scrubber
+              audio(preload="auto")
+
+          p.beta
+            | single track
+
+          .Flag.Player(data-disc='{"id":"b17958ab-8a98-4e28-a0e5-399471868508","title":"Brasil Regional","duration":918,"tracks":[{"duration":918,"url":"/assets/audio/1.mp3","title":"2ª parte"}]}')
+
+            .Flag-figure
+              button.Player-knob.btn.btn-danger.btn-square.glyphicon.delta
+                .Loader
+                .Progress.js-downloadprogress.hidden(role="progressbar" data-inert="true")
+
+            .Flag-body
+              .Progress.js-audioprogress(role="progressbar" tabindex=-1)
+                .Progress-scrubber
+              audio(preload="auto")
+
+    script(src="jquery/dist/jquery.min.js")
     script(src="scripts/radio-player.min.js")
-
-
 
