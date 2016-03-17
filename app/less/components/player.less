@@ -1,7 +1,7 @@
 .Player {}
 
   .Player-knob[data-state="playing"] {
-    .glyphicon-pause();
+    .Icon--pause-alt();
   }
 
   .Player-knob[data-state="error"] {
@@ -17,10 +17,11 @@
   }
 
   .Player-knob {
+    display: block;
     > .Loader {
       display: none;
     }
-    .glyphicon-play();
+    .Icon--play-alt();
   }
 
   .Player-knob[data-state="waiting"] {
