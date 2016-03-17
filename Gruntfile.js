@@ -17,7 +17,7 @@ module.exports = function (grunt) {
     grunt.registerTask('dev', '--allow-remote para permitir acesso externo', function (target) {
 
         if (grunt.option('allow-remote')) {
-            grunt.config.set('connect.options.hostname', '0.0.0.0')
+            grunt.config.set('connect.options.hostname', '*')
         }
 
         grunt.task.run(['_dev'])
