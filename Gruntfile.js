@@ -9,7 +9,7 @@ module.exports = function (grunt) {
         config: {
           app: 'app',
           dist: 'dist',
-          fonts: ["senado.css","bootstrap"]
+          fonts: ['senado.css', 'bootstrap']
         }
       }
     })
