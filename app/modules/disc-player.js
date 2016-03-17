@@ -61,6 +61,7 @@ var discPlayer = {
 
     this.ap.on('stop', bar.disable)
     this.ap.on('pause', bar.disable)
+    this.ap.on('playing', bar.enable)
 
     this.ap.on('state', function (state) {
       $knob.attr('data-state', state)
