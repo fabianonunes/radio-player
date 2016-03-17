@@ -59,8 +59,7 @@ var discPlayer = {
       bar.pipes(_this.ap.disc().composition())
     })
 
-    this.ap.on('stop', bar.disable)
-    this.ap.on('pause', bar.disable)
+    this.ap.on('stop pause', bar.disable)
     this.ap.on('playing', bar.enable)
 
     this.ap.on('state', function (state) {
