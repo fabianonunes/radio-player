@@ -12,6 +12,7 @@ module.exports = function ($el) {
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
   var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
   var scrubber = $el.find('.Progress-scrubber')[0]
+  var isFocusable = $el.is('[tabindex]')
 
   var value = 0
   var scrubValue = false
@@ -126,10 +127,7 @@ module.exports = function ($el) {
 
   var disable = function () {
     $el.off('.progress')
-    if ($el.is('[tabindex]')) {
-      $el.attr('tabindex', '-1')
-    }
-
+    $el.removeAttr('tabindex')
     enabled = false
   }
 
@@ -147,7 +145,7 @@ module.exports = function ($el) {
         .on('keydown.progress', keydown)
     }
 
-    if ($el.is('[tabindex]')) {
+    if (isFocusable) {
       $el.attr('tabindex', '0')
     }
 
