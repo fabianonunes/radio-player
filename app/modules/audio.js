@@ -4,10 +4,9 @@ var Eev = require('eev')
 var helpers = require('./lib/helpers')
 
 module.exports = function ($audio) {
-
-  var emitter      = new Eev()
+  var emitter = new Eev()
   var audioEmitter = $audio
-  var audio        = $audio.get(0)
+  var audio = $audio.get(0)
 
   var state
   var disc
@@ -226,5 +225,4 @@ module.exports = function ($audio) {
   })
 
   return emitter
-
 }

@@ -1,42 +1,40 @@
+/* global URL */
 'use strict'
 
-var $            = require('jquery')
-var pinkyswear   = require('pinkyswear')
+var $ = require('jquery')
+var pinkyswear = require('pinkyswear')
 
-var downloader   = require('./lib/track-download')
-var progressbar  = require('./progressbar')
-var audioPlayer  = require('./audio')
-var discr        = require('./disc')
-var hasBlob      = require('./lib/has-blob')
+var downloader = require('./lib/track-download')
+var progressbar = require('./progressbar')
+var audioPlayer = require('./audio')
+var discr = require('./disc')
+var hasBlob = require('./lib/has-blob')
 
-var pluginName   = 'discPlayer'
-var defaults     = {}
+var pluginName = 'discPlayer'
+var defaults = {}
 
 var discPlayer = {
 
   init: function (element, options) {
-    this.$el       = $(element)
-    this.options   = $.extend({}, defaults, options)
+    this.$el = $(element)
+    this.options = $.extend({}, defaults, options)
     this._defaults = defaults
-    this._name     = pluginName
+    this._name = pluginName
     this._build()
     return this
   },
 
   _build: function () {
+    var _this = this
+    var $knob = this.$el.find('.Player-knob:first')
+    var $audio = this.$el.find('audio:first')
+    var $bar = this.$el.find('.js-audioprogress:first')
+    var disc = discr(this.$el.data('disc'))
+    var bar = progressbar($bar)
 
-    var _this       = this
-
-    var $knob       = this.$el.find('.Player-knob:first')
-    var $audio      = this.$el.find('audio:first')
-    var $bar        = this.$el.find('.js-audioprogress:first')
-
-    var disc        = discr(this.$el.data('disc'))
-    var bar         = progressbar($bar)
-
-    _this.ap        = audioPlayer($audio)
-    _this.$knob     = $knob
-    _this.disc      = disc
+    _this.ap = audioPlayer($audio)
+    _this.$knob = $knob
+    _this.disc = disc
 
     bar.disable()
     bar.on('change', function (data) {
@@ -76,7 +74,6 @@ var discPlayer = {
     if (hasBlob) {
       this.download()
     }
-
   },
 
   stop: function () {
@@ -84,15 +81,14 @@ var discPlayer = {
   },
 
   download: function () {
-
-    var _this       = this
-    var $download   = this.$el.find('.js-downloadprogress:first')
-    var opts        = { responseType: 'blob', cache: true, timeout: 9e10 }
+    var _this = this
+    var $download = this.$el.find('.js-downloadprogress:first')
+    var opts = { responseType: 'blob', cache: true, timeout: 9e10 }
 
     this.$knob.prop('disabled', true)
     this.$knob.attr('data-state', 'downloading')
 
-    var downloadbar    = $download.length && progressbar($download)
+    var downloadbar = $download.length && progressbar($download)
     if (downloadbar) {
       $download.removeClass('hidden')
       downloadbar.enable(true)
@@ -114,7 +110,6 @@ var discPlayer = {
           track.url = URL.createObjectURL(blob)
         })
       })
-
     })
 
     first.then(function () {
@@ -122,7 +117,6 @@ var discPlayer = {
       _this.$knob.attr('data-state', 'paused')
       _this.$knob.prop('disabled', false)
     })
-
   }
 }
 
