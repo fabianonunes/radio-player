@@ -23,6 +23,10 @@ module.exports = function ($audio) {
   var lastTime
   var intervalId
   var loop = function () {
+    if ($audio.closest(document.documentElement).length === 0) {
+      return stopWatch()
+    }
+
     if (lastTime !== undefined) {
       emitNewState(audio.currentTime === lastTime ? 'waiting' : 'playing')
     }
@@ -122,7 +126,7 @@ module.exports = function ($audio) {
 
     audioEmitter
     .one('error.audio', error)
-    .one('loadedmetadata.audio', play)
+    .one('canplay.audio', play)
     .one('loadeddata.audio', function () {
       clearTimeout(waitingId)
       if (position) {
@@ -215,6 +219,9 @@ module.exports = function ($audio) {
   emitter.toggle = toggle
   emitter.disc = function () {
     return disc
+  }
+  emitter.state = function () {
+    return state
   }
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
