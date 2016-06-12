@@ -1,4 +1,4 @@
-/* global jasmine, describe, it, expect, beforeEach, loadFixtures, afterEach, spyOn, spyOnEvent, getJSONFixture, dump, xit, xdescribe */
+/* global MouseEvent, jasmine, describe, it, expect, beforeEach, loadFixtures, afterEach, spyOn, spyOnEvent, getJSONFixture, dump, xit, xdescribe */
 'use strict'
 
 var $ = require('jquery')
@@ -14,13 +14,13 @@ var discData = getJSONFixture('10sec.json')
 var d = disc(discData)
 
 describe('<audio>', function () {
-  if (!bowser.ios) return
+  // if (!bowser.ios) return
   // if (bowser.msie) return
 
   var initEvents = ['loadstart', 'durationchange', 'loadedmetadata', 'loadeddata', 'progress', 'canplay', 'canplaythrough', 'timeupdate']
   var stack
 
-  var $element
+  var $mediaElement
   var $trigger
   var element
   var component
@@ -28,65 +28,106 @@ describe('<audio>', function () {
   beforeEach(function () {
     loadFixtures('markup.html')
     $trigger = $('#trigger')
-    $element = $('audio')
-    element = $element.get(0)
-    component = audio($element)
+    $mediaElement = $('audio')
+    element = $mediaElement.get(0)
+    element.defaultPlaybackRate = 5
+    component = audio($mediaElement)
+
     stack = []
     initEvents.forEach(function (event) {
-      $element.on(event, function () {
+      $mediaElement.on(event, function () {
         stack.push(event)
       })
     })
   })
 
-  xdescribe('load', function () {
+  describe('load', function () {
     it('deve remover o disco se houver')
     it('deve rebobinar o disco inserido')
   })
 
   describe('search', function () {
     beforeEach(function (done) {
-      $trigger.click(function () {
+      $trigger.show().click(function () {
+        $trigger.hide()
         component.point(d)
-        $element.on('loadeddata', function () {
+        $mediaElement.one('loadeddata', function () {
           component.search(0.2)
           done()
         })
-      }).click()
+      })
+      if (!bowser.mobile) {
+        $trigger.click()
+      }
     })
 
     it('deve colocar o audio na posição indicada', function (done) {
-      $element.on('seeked', function () {
-        expect(element.currentTime).toBe(2)
+      $mediaElement.on('seeked', function () {
+        expect(element.currentTime).toBe(4)
         done()
       })
     })
+
+    it('deve passar de faixar quando preciso', function (done) {
+      component.on('cued', function (track) {
+        expect(track.title).toBe('two')
+        done()
+      })
+      component.search(0.8)
+    })
+
+    it('deve colocar o audio na posição indicada, mesmo em outra faixa', function (done) {
+      $mediaElement.on('seeked', function () {
+        expect(element.currentTime).toBe(8)
+        done()
+      })
+      component.search(0.9)
+    })
+
+    it('deve lançar ended ao terminar o disco', function (done) {
+      component.on('ended', function () {
+        expect(element.paused).toBe(true)
+        done()
+      })
+      component.play()
+      component.search(0.95)
+    })
   })
 
-  xdescribe('point', function () {
-    beforeEach(function () {
-      $trigger.click(function () {
-        component.point(d)
-      }).click()
+  describe('point', function () {
+    beforeEach(function (done) {
       spyOn(element, 'play').and.callThrough()
+
+      component.once('cued', function () {
+        done()
+      })
+
+      $trigger.show().click(function () {
+        component.point(d)
+        $trigger.hide()
+      })
+
+      if (!bowser.mobile) {
+        $trigger.click()
+      }
     })
 
     it('não deve começar a tocar no `loadeddata`', function (done) {
-      $element.on('loadeddata', function () {
+      $mediaElement.on('loadeddata', function () {
         expect(element.play).not.toHaveBeenCalled()
         done()
       })
     })
 
     it('deve começar a tocar no `canplay`', function (done) {
-      $element.on('canplay', function () {
+      $mediaElement.on('canplay', function () {
         expect(element.play).toHaveBeenCalled()
         done()
       })
     })
 
     it('deve atualizar a duração do audio', function (done) {
-      $element.on('durationchange', function () {
+      $mediaElement.on('durationchange', function () {
         expect(element.duration).toBeGreaterThan(10)
         expect(element.duration).toBeLessThan(11)
         done()
@@ -94,30 +135,32 @@ describe('<audio>', function () {
     })
 
     it('deve emitir um state `playing` assim que tocar', function (done) {
-      $element.on('canplay', function () {
+      $mediaElement.on('canplay', function () {
         expect(component.state()).toBe('playing')
         done()
       })
     })
 
-    xdescribe('click to play', function () {
-      if (!(bowser.ios || (bowser.chrome && bowser.mobile))) {
-        return
-      }
+    it('deve mudar de faixa automaticamente', function (done) {
+      component.search(0.45)
+      expect(element.currentTime).toBe(9)
+      component.on('cued', function (track) {
+        expect(track.title).toBe('two')
+        expect(element.src).toBe(track.url)
 
-      beforeEach(function (done) {
-        $trigger.on('click', done)
-        setTimeout(done, 1000)
-      })
+        $mediaElement.one('playing', function () {
+          expect(element.currentTime).toBe(0)
+          expect(element.paused).toBeFalsy()
 
-      it('deve rodar o timeupdate', function (done) {
-        setTimeout(function () {
-          done()
-        }, 100)
+          setTimeout(function () {
+            expect(element.currentTime).toBeGreaterThan(0)
+            done()
+          }, 200)
+        })
       })
     })
 
-    xdescribe('todo', function () {
+    describe('todo', function () {
       it('deve cancelar o watch ao remover o elemento da dom')
       it('não deve permitir o seek/search se não houver carregado o loadeddata')
     })

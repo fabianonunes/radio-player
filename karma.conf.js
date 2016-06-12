@@ -6,13 +6,13 @@ var path = require('path')
 var webpackConfig = require('./webpack.config.js')
 webpackConfig.devtool = 'eval'
 
-webpackConfig.module = {
-  preLoaders: [{
-    test: /\.js$/,
-    include: path.resolve('modules'),
-    loader: 'istanbul-instrumenter'
-  }]
-}
+// webpackConfig.module = {
+//   preLoaders: [{
+//     test: /\.js$/,
+//     include: path.resolve('modules'),
+//     loader: 'istanbul-instrumenter'
+//   }]
+// }
 
 module.exports = function (config) {
   config.set({
@@ -34,8 +34,8 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/test.webpack.js': ['webpack'],
-      'modules/**/*.js': ['coverage']
+      'test/test.webpack.js': ['webpack']
+      // 'modules/**/*.js': ['coverage']
     },
 
     webpack: webpackConfig,
