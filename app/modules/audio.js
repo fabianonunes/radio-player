@@ -186,7 +186,7 @@ module.exports = function ($media) {
 
     eject()
     disc = d
-    d.rewind()
+    // d.rewind()
   }
 
   var point = function (d) {
