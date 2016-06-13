@@ -1,13 +1,15 @@
 'use strict'
 
 var webpack = require('webpack')
+var path = require('path')
 
 module.exports = {
   entry: {
-    'radio-player': ['main']
+    'radio-player': ['main'],
+    'video-player': ['videos']
   },
   output: {
-    path: __dirname + '/dist/scripts',
+    path: path.join(__dirname, 'dist/scripts'),
     filename: '[name].min.js'
   },
   externals: {
@@ -22,7 +24,7 @@ module.exports = {
   resolve: {
     modulesDirectories: [
       'node_modules',
-      __dirname + '/app/modules'
+      path.join(__dirname, 'app/modules')
     ]
   },
   node: {
