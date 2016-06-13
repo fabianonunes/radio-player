@@ -1,0 +1,30 @@
+doctype html
+html(lang='pt')
+
+  head
+    meta(charset='utf-8')
+    meta(http-equiv='X-UA-Compatible', content='IE=edge')
+    title
+    meta(name='viewport', content='width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no')
+
+    link(href='styles/vendors.css', rel='stylesheet')
+    link(href='styles/main.css', rel='stylesheet')
+
+  body#sfcss
+
+    .container
+      .row
+        .col-sm-8
+          .Box.Box--lg
+            .Embed.Embed--3by2(class="+light")
+              video#video(src='/assets/output1_.mp4' controls)
+        .col-sm-4
+          .Box
+            .js-output
+
+      .Box
+        button#goto.btn.btn-default Ir para 50%
+
+    script(src="jquery/dist/jquery.min.js")
+    script(src="scripts/video-player.min.js")
+

@@ -1,0 +1,12 @@
+{
+  "tracks": [
+    { "duration": 16, "url": "/assets/output1_.mp4" },
+    { "duration": 19, "url": "/assets/output2_.mp4" },
+    { "duration": 21, "url": "/assets/output3_.mp4" },
+    { "duration": 28, "url": "/assets/output4_.mp4" },
+    { "duration": 31, "url": "/assets/output5_.mp4" },
+    { "duration": 59, "url": "/assets/output6_.mp4" },
+    { "duration": 101, "url": "/assets/output7_.mp4" },
+    { "duration": 56, "url": "/assets/output8_.mp4" }
+  ]
+}
