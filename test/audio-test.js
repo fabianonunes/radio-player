@@ -161,6 +161,8 @@ describe('<audio>', function () {
     })
 
     describe('todo', function () {
+      it('não deve tocar se o point for quiet')
+      it('deve colocar a currentTrack do disco na agulha')
       it('deve cancelar o watch ao remover o elemento da dom')
       it('não deve permitir o seek/search se não houver carregado o loadeddata')
     })
