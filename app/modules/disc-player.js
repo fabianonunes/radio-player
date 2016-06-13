@@ -6,7 +6,7 @@ var pinkyswear = require('pinkyswear')
 
 var downloader = require('./lib/track-download')
 var progressbar = require('./progressbar')
-var audioPlayer = require('./audio')
+var audioPlayer = require('./jukebox')
 var discr = require('./disc')
 var hasBlob = require('./lib/has-blob')
 
