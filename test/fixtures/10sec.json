@@ -1,0 +1,14 @@
+{
+  "id": "e79c0647-dcda-48c5-baf6-640b7afac234",
+  "title": "10sec",
+  "duration": 20,
+  "tracks": [{
+    "duration": 10,
+    "url": "http://fenix:3000/10sec__.mp3",
+    "title": "one"
+  }, {
+    "duration": 10,
+    "url": "http://fenix:3000/10sec.mp3",
+    "title": "two"
+  }]
+}

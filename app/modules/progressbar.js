@@ -6,7 +6,6 @@ var transformKey = require('./lib/transform-key')
 var raf = require('raf')
 
 module.exports = function ($el) {
-
   var r = new Eev()
 
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]

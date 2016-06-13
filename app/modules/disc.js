@@ -1,7 +1,6 @@
 'use strict'
 
 module.exports = function (data) {
-
   var _currentIdx = 0
   var totalDuration = data.duration
 
@@ -34,7 +33,6 @@ module.exports = function (data) {
   }
 
   var currentProgress = function (progress) {
-
     var previous = 0
 
     for (var i = _currentIdx - 1; i >= 0; i = i - 1) {
@@ -42,7 +40,6 @@ module.exports = function (data) {
     }
 
     return (currentTrack().duration * progress + previous) / totalDuration
-
   }
 
   var currentTime = function (progress) {
@@ -54,7 +51,6 @@ module.exports = function (data) {
   }
 
   var search = function (progress) {
-
     var start = 0
     var idx = -1
     var position = 0
@@ -77,7 +73,6 @@ module.exports = function (data) {
       track: tracks[idx],
       position: position
     }
-
   }
 
   var composition = function () {
@@ -104,5 +99,4 @@ module.exports = function (data) {
       return tracks
     }
   }
-
 }

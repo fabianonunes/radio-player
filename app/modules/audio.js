@@ -1,13 +1,11 @@
 'use strict'
 
-var Eev = require('eev')
-var helpers = require('./lib/helpers')
+var EventEmitter = require('wolfy87-eventemitter')
 
-module.exports = function ($audio) {
-
-  var emitter      = new Eev()
-  var audioEmitter = $audio
-  var audio        = $audio.get(0)
+module.exports = function ($media) {
+  var emitter = new EventEmitter()
+  var mediaElement = $media
+  var audio = $media.get(0)
 
   var state
   var disc
@@ -24,6 +22,11 @@ module.exports = function ($audio) {
   var lastTime
   var intervalId
   var loop = function () {
+    if ($media.closest(document.documentElement).length === 0) {
+      // verificar se o elemento foi removido do DOM
+      return stopWatch()
+    }
+
     if (lastTime !== undefined) {
       emitNewState(audio.currentTime === lastTime ? 'waiting' : 'playing')
     }
@@ -43,7 +46,7 @@ module.exports = function ($audio) {
   }
 
   var off = function () {
-    audioEmitter.off('.audio')
+    mediaElement.off('.audio')
   }
 
   var play = function () {
@@ -62,7 +65,7 @@ module.exports = function ($audio) {
       stopWatch()
       audio.pause()
       if (quiet !== true) {
-        audioEmitter.one('pause.audio', function () {
+        mediaElement.one('pause.audio', function () {
           emitNewState('pause')
         })
       }
@@ -94,8 +97,8 @@ module.exports = function ($audio) {
     var progress = audio.currentTime / audio.duration
     emitter.emit('progress', {
       progress: disc.currentProgress(progress),
-      currentTime: helpers.secondsToTime(disc.currentTime(progress)),
-      totalTime: helpers.secondsToTime(disc.totalTime())
+      currentTime: disc.currentTime(progress),
+      totalTime: disc.totalTime()
     })
   }
 
@@ -104,12 +107,12 @@ module.exports = function ($audio) {
     audio.currentTime = position
     var waitingId = emitNewState('waiting', 50)
 
-    audioEmitter.one('seeked.audio', function () {
+    mediaElement.one('seeked.audio', function () {
       clearTimeout(waitingId)
 
       // se não houver dados suficientes, o player do safari fica rodando no vazio
       if (audio.readyState < 3) {
-        audioEmitter.one('canplay.audio', play)
+        mediaElement.one('canplay.audio', play)
       } else {
         play()
       }
@@ -121,15 +124,15 @@ module.exports = function ($audio) {
 
     var waitingId = emitNewState('waiting', 50)
 
-    audioEmitter
+    mediaElement
     .one('error.audio', error)
-    .one('loadedmetadata.audio', play)
+    .one('canplay.audio', play)
     .one('loadeddata.audio', function () {
       clearTimeout(waitingId)
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
         if (audio.duration === 100 && audio.currentTime === 0) {
-          audioEmitter.one('timeupdate.audio', function () {
+          mediaElement.one('timeupdate.audio', function () {
             seek(position)
           })
         } else {
@@ -200,7 +203,7 @@ module.exports = function ($audio) {
   }
 
   on = function () {
-    audioEmitter
+    mediaElement
       .on('timeupdate.audio', timeupdate)
       .on('ended.audio', ended)
       .on('waiting.audio loadstart.audio', function () {
@@ -217,6 +220,9 @@ module.exports = function ($audio) {
   emitter.disc = function () {
     return disc
   }
+  emitter.state = function () {
+    return state
+  }
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
     emitter.on(event, function () {
@@ -226,5 +232,4 @@ module.exports = function ($audio) {
   })
 
   return emitter
-
 }

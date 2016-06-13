@@ -1,9 +1,10 @@
+/* global Blob */
 'use strict'
 
 module.exports = (function () {
   try {
-    return !!new Blob();
+    return !!new Blob()
   } catch (e) {
-    return false;
+    return false
   }
 })()
