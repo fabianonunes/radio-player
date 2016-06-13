@@ -2,7 +2,9 @@
 
 module.exports = function (data) {
   var _currentIdx = 0
-  var totalDuration = data.duration
+  var totalDuration = data.tracks.reduce(function (accum, track) {
+    return accum + track.duration
+  }, 0)
 
   var tracks = data.tracks.map(function (track, i) {
     track.idx = i
