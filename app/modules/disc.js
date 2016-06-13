@@ -1,7 +1,7 @@
 'use strict'
 
 module.exports = function (data) {
-  var _currentIdx = 0
+  var _currentIdx = data.currentTrack || 0
   var totalDuration = data.tracks.reduce(function (accum, track) {
     return accum + track.duration
   }, 0)
