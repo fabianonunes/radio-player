@@ -22,15 +22,15 @@ describe('<audio>', function () {
 
   var $mediaElement
   var $trigger
-  var element
+  var mediaElement
   var component
 
   beforeEach(function () {
     loadFixtures('markup.html')
     $trigger = $('#trigger')
     $mediaElement = $('audio')
-    element = $mediaElement.get(0)
-    element.defaultPlaybackRate = 5
+    mediaElement = $mediaElement.get(0)
+    mediaElement.defaultPlaybackRate = 5
     component = audio($mediaElement)
 
     stack = []
@@ -63,7 +63,7 @@ describe('<audio>', function () {
 
     it('deve colocar o audio na posição indicada', function (done) {
       $mediaElement.on('seeked', function () {
-        expect(element.currentTime).toBe(4)
+        expect(mediaElement.currentTime).toBe(4)
         done()
       })
     })
@@ -78,7 +78,7 @@ describe('<audio>', function () {
 
     it('deve colocar o audio na posição indicada, mesmo em outra faixa', function (done) {
       $mediaElement.on('seeked', function () {
-        expect(element.currentTime).toBe(8)
+        expect(mediaElement.currentTime).toBe(8)
         done()
       })
       component.search(0.9)
@@ -86,7 +86,7 @@ describe('<audio>', function () {
 
     it('deve lançar ended ao terminar o disco', function (done) {
       component.on('ended', function () {
-        expect(element.paused).toBe(true)
+        expect(mediaElement.paused).toBe(true)
         done()
       })
       component.play()
@@ -96,7 +96,7 @@ describe('<audio>', function () {
 
   describe('point', function () {
     beforeEach(function (done) {
-      spyOn(element, 'play').and.callThrough()
+      spyOn(mediaElement, 'play').and.callThrough()
 
       component.once('cued', function () {
         done()
@@ -114,22 +114,22 @@ describe('<audio>', function () {
 
     it('não deve começar a tocar no `loadeddata`', function (done) {
       $mediaElement.on('loadeddata', function () {
-        expect(element.play).not.toHaveBeenCalled()
+        expect(mediaElement.play).not.toHaveBeenCalled()
         done()
       })
     })
 
     it('deve começar a tocar no `canplay`', function (done) {
       $mediaElement.on('canplay', function () {
-        expect(element.play).toHaveBeenCalled()
+        expect(mediaElement.play).toHaveBeenCalled()
         done()
       })
     })
 
     it('deve atualizar a duração do audio', function (done) {
       $mediaElement.on('durationchange', function () {
-        expect(element.duration).toBeGreaterThan(10)
-        expect(element.duration).toBeLessThan(11)
+        expect(mediaElement.duration).toBeGreaterThan(10)
+        expect(mediaElement.duration).toBeLessThan(11)
         done()
       })
     })
@@ -143,17 +143,17 @@ describe('<audio>', function () {
 
     it('deve mudar de faixa automaticamente', function (done) {
       component.search(0.45)
-      expect(element.currentTime).toBe(9)
+      expect(mediaElement.currentTime).toBe(9)
       component.on('cued', function (track) {
         expect(track.title).toBe('two')
-        expect(element.src).toBe(track.url)
+        expect(mediaElement.src).toBe(track.url)
 
         $mediaElement.one('playing', function () {
-          expect(element.currentTime).toBe(0)
-          expect(element.paused).toBeFalsy()
+          expect(mediaElement.currentTime).toBe(0)
+          expect(mediaElement.paused).toBeFalsy()
 
           setTimeout(function () {
-            expect(element.currentTime).toBeGreaterThan(0)
+            expect(mediaElement.currentTime).toBeGreaterThan(0)
             done()
           }, 200)
         })
