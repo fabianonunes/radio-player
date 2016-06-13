@@ -22,11 +22,12 @@
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
     "karma-jasmine-ajax": "^0.1.13",
+    "karma-jasmine-jquery": "^0.1.1",
     "karma-webpack": "1.7.0",
     "load-grunt-config": "^0.19.2",
     "load-grunt-tasks": "^3.5.0",
     "senado.css": "https://github.com/agenciasenado/senado.css.git#2.4.0",
-    "serve-static": "^1.10.2",
+    "serve-static": "^1.11.1",
     "webpack": "^1.13.0",
     "webpack-dev-server": "^1.14.1"
   },
@@ -34,6 +35,8 @@
     "bootstrap": "^3.3.6",
     "eev": "0.0.4",
     "jquery": "^2.2.1",
+    "json-loader": "^0.5.4",
+    "pluginify": "github:fabianonunes/pluginify#1.1.0",
     "qwest": "^4.4.2",
     "raf": "^3.2.0",
     "wolfy87-eventemitter": "^5.0.0"
