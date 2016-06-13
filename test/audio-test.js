@@ -3,7 +3,7 @@
 
 var $ = require('jquery')
 var bowser = require('bowser')
-var audio = require('../app/modules/audio')
+var audio = require('../app/modules/jukebox')
 var disc = require('../app/modules/disc')
 
 jasmine.getFixtures().fixturesPath = 'base/test/fixtures/'

@@ -5,8 +5,7 @@ var path = require('path')
 
 module.exports = {
   entry: {
-    'radio-player': ['main'],
-    'video-player': ['videos']
+    'radio-player': ['main']
   },
   output: {
     path: path.join(__dirname, 'dist/scripts'),

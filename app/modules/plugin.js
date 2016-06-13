@@ -18,17 +18,11 @@ var factory = function (el, opts) {
   var jkbx = jukebox($mediaElement)
   var disc = discr(opts)
 
-  jkbx.point(disc)
+  jkbx.point(disc, /* quiet */ true)
 
   return jkbx
 }
 
-// var template = require('./templates/tracks.jade')
-// var data = require('./fixtures/videos.json')
-// var $video = $('#video')
-// var $output = $('.js-output')
-// var $goto = $('#goto')
-// $output.html(template({ tracks: data.tracks }))
-
 pluginify('jukebox', factory)
+
 module.exports = factory
