@@ -15,12 +15,12 @@ var factory = function (el, opts) {
   var $mediaElement = el instanceof $ ? el : $(el)
   opts = $.extend({}, defaults, opts, $mediaElement.data())
 
-  var component = jukebox($mediaElement)
+  var jkbx = jukebox($mediaElement)
   var disc = discr(opts)
 
-  component.point(disc)
+  jkbx.point(disc)
 
-  return component
+  return jkbx
 }
 
 // var template = require('./templates/tracks.jade')
