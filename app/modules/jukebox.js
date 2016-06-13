@@ -1,20 +1,20 @@
 'use strict'
 
 var EventEmitter = require('wolfy87-eventemitter')
+var $ = require('jquery')
 
 module.exports = function ($media) {
   var emitter = new EventEmitter()
-  var mediaElement = $media
-  var audio = $media.get(0)
+  var media = $media.get(0)
 
-  var state
+  var currentState
   var disc
   var on
   var cue
 
-  var emitNewState = function (newState, delay) {
-    if (state !== newState) {
-      var f = emitter.emit.bind(emitter, newState)
+  var emitStateChange = function (state, delay) {
+    if (currentState !== state) {
+      var f = emitter.emit.bind(emitter, state)
       return delay ? setTimeout(f, delay) : f()
     }
   }
@@ -28,10 +28,10 @@ module.exports = function ($media) {
     }
 
     if (lastTime !== undefined) {
-      emitNewState(audio.currentTime === lastTime ? 'waiting' : 'playing')
+      emitStateChange(media.currentTime === lastTime ? 'waiting' : 'playing')
     }
 
-    lastTime = audio.currentTime
+    lastTime = media.currentTime
   }
 
   var stopWatch = function () {
@@ -46,14 +46,14 @@ module.exports = function ($media) {
   }
 
   var off = function () {
-    mediaElement.off('.audio')
+    $media.off('.jukebox')
   }
 
   var play = function () {
     if (disc.currentTrack()) {
-      audio.play()
+      media.play()
       watch()
-      emitNewState('playing')
+      emitStateChange('playing')
     } else {
       disc.rewind()
       cue()
@@ -61,25 +61,23 @@ module.exports = function ($media) {
   }
 
   var pause = function (quiet) {
-    if (disc) {
-      stopWatch()
-      audio.pause()
-      if (quiet !== true) {
-        mediaElement.one('pause.audio', function () {
-          emitNewState('pause')
-        })
-      }
+    stopWatch()
+    media.pause()
+    if (quiet !== true) {
+      $media.one('pause.jukebox', function () {
+        emitStateChange('pause')
+      })
     }
   }
 
   var stop = function () {
     off()
-    if (audio.readyState > 0) {
+    if (media.readyState > 0) {
       pause()
-      audio.currentTime = 0
+      media.currentTime = 0
     }
 
-    audio.src = ''
+    media.src = ''
     emitter.emit('stop')
   }
 
@@ -94,7 +92,7 @@ module.exports = function ($media) {
   }
 
   var timeupdate = function () {
-    var progress = audio.currentTime / audio.duration
+    var progress = media.currentTime / media.duration
     emitter.emit('progress', {
       progress: disc.currentProgress(progress),
       currentTime: disc.currentTime(progress),
@@ -104,35 +102,37 @@ module.exports = function ($media) {
 
   var seek = function (position) {
     pause(true)
-    audio.currentTime = position
-    var waitingId = emitNewState('waiting', 50)
+    media.currentTime = position
+    var waitingId = emitStateChange('waiting', 50)
 
-    mediaElement.one('seeked.audio', function () {
+    $media.one('seeked.jukebox', function () {
       clearTimeout(waitingId)
 
       // se não houver dados suficientes, o player do safari fica rodando no vazio
-      if (audio.readyState < 3) {
-        mediaElement.one('canplay.audio', play)
+      if (media.readyState < 3) {
+        $media.one('canplay.jukebox', play)
       } else {
         play()
       }
     })
   }
 
-  cue = function (position) {
+  var noop = function () {}
+
+  cue = function (position, quiet) {
     off()
 
-    var waitingId = emitNewState('waiting', 50)
+    var waitingId = emitStateChange('waiting', 50)
 
-    mediaElement
-    .one('error.audio', error)
-    .one('canplay.audio', play)
-    .one('loadeddata.audio', function () {
+    $media
+    .one('error.jukebox', error)
+    .one('canplay.jukebox', quiet === true ? noop : play)
+    .one('loadeddata.jukebox', function () {
       clearTimeout(waitingId)
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
-        if (audio.duration === 100 && audio.currentTime === 0) {
-          mediaElement.one('timeupdate.audio', function () {
+        if (media.duration === 100 && media.currentTime === 0) {
+          $media.one('timeupdate.jukebox', function () {
             seek(position)
           })
         } else {
@@ -143,8 +143,8 @@ module.exports = function ($media) {
       on()
     })
 
-    audio.src = disc.currentTrack().url
-    audio.load() // necessário para o IOS
+    media.src = disc.currentTrack().url
+    media.load() // necessário para o IOS
     emitter.emit('cued', disc.currentTrack())
   }
 
@@ -166,7 +166,7 @@ module.exports = function ($media) {
       progress: 0,
       currentTime: 0
     })
-    emitNewState('stop')
+    emitStateChange('stop')
   }
 
   var ended = function () {
@@ -189,13 +189,13 @@ module.exports = function ($media) {
     // d.rewind()
   }
 
-  var point = function (d) {
+  var point = function (d, quiet) {
     load(d)
-    cue()
+    cue(0, quiet)
   }
 
   var toggle = function () {
-    if (state !== 'playing') {
+    if (currentState !== 'playing') {
       play()
     } else {
       pause()
@@ -203,30 +203,30 @@ module.exports = function ($media) {
   }
 
   on = function () {
-    mediaElement
-      .on('timeupdate.audio', timeupdate)
-      .on('ended.audio', ended)
-      .on('waiting.audio loadstart.audio', function () {
+    $media
+      .on('timeupdate.jukebox', timeupdate)
+      .on('ended.jukebox', ended)
+      .on('waiting.jukebox loadstart.jukebox', function () {
         emitter.emit('waiting')
       })
   }
 
-  emitter.play = play
-  emitter.pause = pause
-  emitter.load = load
-  emitter.point = point
-  emitter.search = search
-  emitter.toggle = toggle
-  emitter.disc = function () {
-    return disc
+  var api = {
+    play: play,
+    pause: pause,
+    load: load,
+    point: point,
+    search: search,
+    toggle: toggle,
+    disc: function () { return disc },
+    state: function () { return currentState }
   }
-  emitter.state = function () {
-    return state
-  }
+
+  emitter = $.extend(emitter, api)
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
     emitter.on(event, function () {
-      state = event
+      currentState = event
       emitter.emit('state', event)
     })
   })
