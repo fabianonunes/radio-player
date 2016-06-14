@@ -1,7 +1,4 @@
-'use strict'
-
 var EventEmitter = require('wolfy87-eventemitter')
-var $ = require('jquery')
 
 module.exports = function ($media) {
   var emitter = new EventEmitter()
@@ -92,7 +89,7 @@ module.exports = function ($media) {
   }
 
   var timeupdate = function () {
-    var progress = media.currentTime / media.duration
+    var progress = (media.currentTime / media.duration) || 0
     emitter.emit('progress', {
       progress: disc.currentProgress(progress),
       currentTime: disc.currentTime(progress),
@@ -146,10 +143,11 @@ module.exports = function ($media) {
     media.src = disc.currentTrack().url
     media.load() // necessário para o IOS
     emitter.emit('cued', disc.currentTrack())
+    timeupdate()
   }
 
   var search = function (progress) {
-    pause(true)
+    pause(/* quiet */ true)
     var r = disc.search(progress)
     if (disc.currentTrack().idx !== r.track.idx) {
       disc.setTrack(r.track.idx)
@@ -186,7 +184,6 @@ module.exports = function ($media) {
 
     eject()
     disc = d
-    // d.rewind()
   }
 
   var point = function (d, quiet) {
@@ -202,6 +199,11 @@ module.exports = function ($media) {
     }
   }
 
+  var tune = function (idx) {
+    disc.setTrack(idx)
+    cue()
+  }
+
   on = function () {
     $media
       .on('timeupdate.jukebox', timeupdate)
@@ -211,18 +213,15 @@ module.exports = function ($media) {
       })
   }
 
-  var api = {
-    play: play,
-    pause: pause,
-    load: load,
-    point: point,
-    search: search,
-    toggle: toggle,
-    disc: function () { return disc },
-    state: function () { return currentState }
-  }
-
-  emitter = $.extend(emitter, api)
+  emitter.play = play
+  emitter.pause = pause
+  emitter.load = load
+  emitter.point = point
+  emitter.search = search
+  emitter.toggle = toggle
+  emitter.tune = tune
+  emitter.disc = function () { return disc }
+  emitter.state = function () { return currentState }
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
     emitter.on(event, function () {
