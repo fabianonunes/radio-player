@@ -192,6 +192,9 @@ module.exports = function ($media) {
   }
 
   var point = function (d, quiet) {
+    if (!d || d.size() === 0) {
+      return
+    }
     load(d)
     cue(0, quiet)
     timeupdate()

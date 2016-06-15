@@ -97,6 +97,9 @@ module.exports = function (data) {
     currentProgress: currentProgress,
     currentTime: currentTime,
     totalTime: totalTime,
+    size: function () {
+      return tracks.length
+    },
     tracks: function () {
       return tracks
     }
