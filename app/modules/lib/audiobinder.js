@@ -1,14 +1,37 @@
 'use strict'
-module.exports = function (emitter) {
-  ;['abort', 'canplay', 'canplaythrough', 'durationchange',
-  'emptied', 'encrypted ', 'ended', 'error',
-  'interruptbegin', 'interruptend', 'loadeddata',
-  'loadedmetadata', 'loadstart', 'mozaudioavailable',
-  'pause', 'play', 'playing', 'progress', 'ratechange', 'seeked', 'seeking', 'stalled', 'suspend',
-  'timeupdate', 'volumechange', 'waiting'].forEach(function (eventName) {
-    emitter.on(eventName, function () {
-      console.log(eventName)
-      /*, emitter[0].currentTime, emitter[0].duration, emitter[0].readyState, emitter[0].buffered.end(0)*/
+module.exports = function (media) {
+  ;['abort.audiobinder',
+    'canplay.audiobinder',
+    'canplaythrough.audiobinder',
+    'durationchange.audiobinder',
+    'emptied.audiobinder',
+    'encrypted .audiobinder',
+    'ended.audiobinder',
+    'error.audiobinder',
+    'interruptbegin.audiobinder',
+    'interruptend.audiobinder',
+    'loadeddata.audiobinder',
+    'loadedmetadata.audiobinder',
+    'loadstart.audiobinder',
+    'mozaudioavailable.audiobinder',
+    'pause.audiobinder',
+    'play.audiobinder',
+    'playing.audiobinder',
+    'progress.audiobinder',
+    'ratechange.audiobinder',
+    'seeked.audiobinder',
+    'seeking.audiobinder',
+    'stalled.audiobinder',
+    'suspend.audiobinder',
+    'timeupdate.audiobinder',
+    'volumechange.audiobinder',
+    'waiting.audiobinder'
+  ].forEach(function (eventName) {
+    media.on(eventName, function () {
+      console.log(
+        eventName,
+        media[0].currentTime, media[0].duration, media[0].readyState, media[0].buffered.end(0)
+      )
     })
   })
 }
