@@ -194,6 +194,7 @@ module.exports = function ($media) {
   var point = function (d, quiet) {
     load(d)
     cue(0, quiet)
+    timeupdate()
   }
 
   var toggle = function () {
@@ -207,6 +208,7 @@ module.exports = function ($media) {
   var tune = function (idx) {
     disc.setTrack(idx)
     cue()
+    timeupdate()
   }
 
   on = function () {
