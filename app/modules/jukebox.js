@@ -107,8 +107,6 @@ module.exports = function ($media) {
     $media.one('seeked.jukebox', function () {
       $media.css({ 'display': elementDisplay })
       clearTimeout(waitingId)
-
-      // se não houver dados suficientes, o player do safari fica rodando no vazio
       if (media.readyState < 3) {
         $media.one('canplay.jukebox', play)
       } else {
@@ -132,6 +130,7 @@ module.exports = function ($media) {
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
         if (media.duration === 100 && media.currentTime === 0) {
+          // TODO: tentar reproduzir essa situação
           $media.one('timeupdate.jukebox', function () {
             seek(position)
           })
