@@ -5,6 +5,7 @@ var pluginify = require('pluginify')
 
 var jukebox = require('./jukebox')
 var discr = require('./disc')
+var progressbar = require('./progressbar')
 
 var defaults = {
   currentTrack: 0,
@@ -24,7 +25,13 @@ var factory = function (el, opts) {
 
   var progress = opts.progress
   if (progress) {
-    jkbx.on('progress', progress)
+    var bar = progressbar(progress)
+    jkbx.on('progress', function (p) {
+      bar.slide(p.progress)
+    })
+    bar.on('change', function (p) {
+      jkbx.search(p.progress)
+    })
   }
 
   return jkbx
