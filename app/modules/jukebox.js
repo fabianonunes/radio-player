@@ -138,24 +138,27 @@ module.exports = function ($media) {
           seek(position)
         }
       }
-
       on()
     })
 
     media.src = disc.currentTrack().url
+    if (position) {
+      // evitar exibição do primeiro frame ao seek
+      $media.css({ display: 'none' })
+    }
     media.load() // necessário para o IOS
     emitter.emit('cued', disc.currentTrack())
-    timeupdate()
   }
 
   var search = function (progress) {
     pause(/* quiet */ true)
+    var currentTrack = disc.currentTrack()
     var r = disc.search(progress)
-    if (disc.currentTrack().idx !== r.track.idx) {
+    if (currentTrack && currentTrack.idx === r.track.idx) {
+      seek(r.position)
+    } else {
       disc.setTrack(r.track.idx)
       cue(r.position)
-    } else {
-      seek(r.position)
     }
   }
 
