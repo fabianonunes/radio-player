@@ -1,7 +1,6 @@
 'use strict'
 
 var $ = require('jquery')
-var pluginify = require('pluginify')
 
 var jukebox = require('./jukebox')
 var discr = require('./disc')
@@ -36,7 +35,5 @@ var factory = function (el, opts) {
 
   return jkbx
 }
-
-pluginify('jukebox', factory)
 
 module.exports = factory
