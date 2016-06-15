@@ -4,6 +4,8 @@ module.exports = function ($media) {
   var emitter = new EventEmitter()
   var media = $media.get(0)
 
+  var elementDisplay = $media.css('display')
+
   var currentState
   var disc
   var on
@@ -103,6 +105,7 @@ module.exports = function ($media) {
     var waitingId = emitStateChange('waiting', 50)
 
     $media.one('seeked.jukebox', function () {
+      $media.css({ 'display': elementDisplay })
       clearTimeout(waitingId)
 
       // se não houver dados suficientes, o player do safari fica rodando no vazio
