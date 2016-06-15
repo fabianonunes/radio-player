@@ -1,4 +1,4 @@
-/* global MouseEvent, jasmine, describe, it, expect, beforeEach, loadFixtures, afterEach, spyOn, spyOnEvent, getJSONFixture, dump, xit, xdescribe */
+/* global jasmine, describe, it, expect, beforeEach, loadFixtures, afterEach, spyOn, spyOnEvent, getJSONFixture, dump */
 'use strict'
 
 var $ = require('jquery')
@@ -11,8 +11,6 @@ jasmine.getJSONFixtures().fixturesPath = 'base/test/fixtures/'
 
 var discData = getJSONFixture('10sec.json')
 
-var d = disc(discData)
-
 describe('<audio>', function () {
   // if (!bowser.ios) return
   // if (bowser.msie) return
@@ -24,6 +22,7 @@ describe('<audio>', function () {
   var $trigger
   var mediaElement
   var component
+  var d
 
   beforeEach(function () {
     loadFixtures('markup.html')
@@ -32,6 +31,7 @@ describe('<audio>', function () {
     mediaElement = $mediaElement.get(0)
     mediaElement.defaultPlaybackRate = 5
     component = audio($mediaElement)
+    d = disc(discData)
 
     stack = []
     initEvents.forEach(function (event) {
@@ -41,17 +41,12 @@ describe('<audio>', function () {
     })
   })
 
-  describe('load', function () {
-    it('deve remover o disco se houver')
-    it('deve rebobinar o disco inserido')
-  })
-
   describe('search', function () {
     beforeEach(function (done) {
       $trigger.show().click(function () {
         $trigger.hide()
         component.point(d)
-        $mediaElement.one('loadeddata', function () {
+        $mediaElement.one('canplaythrough', function () {
           component.search(0.2)
           done()
         })
@@ -119,8 +114,8 @@ describe('<audio>', function () {
       })
     })
 
-    it('deve começar a tocar no `canplay`', function (done) {
-      $mediaElement.on('canplay', function () {
+    it('deve começar a tocar no `canplaythrough`', function (done) {
+      $mediaElement.on('canplaythrough', function () {
         expect(mediaElement.play).toHaveBeenCalled()
         done()
       })
@@ -135,7 +130,7 @@ describe('<audio>', function () {
     })
 
     it('deve emitir um state `playing` assim que tocar', function (done) {
-      $mediaElement.on('canplay', function () {
+      $mediaElement.on('canplaythrough', function () {
         expect(component.state()).toBe('playing')
         done()
       })
@@ -161,10 +156,16 @@ describe('<audio>', function () {
     })
 
     describe('todo', function () {
+      // load
+      it('deve remover o disco se houver')
+      it('deve rebobinar o disco inserido')
+
+      // outros
       it('não deve tocar se o point for quiet')
       it('deve colocar a currentTrack do disco na agulha')
       it('deve cancelar o watch ao remover o elemento da dom')
       it('não deve permitir o seek/search se não houver carregado o loadeddata')
+      it('deve emitir o evento progress ao colocar nova faixa na agulha')
     })
   })
 })
