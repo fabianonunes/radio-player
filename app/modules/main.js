@@ -41,9 +41,16 @@ $progress.on('change', function () {
 })
 
 jukebox.on('cued', function (track) {
-  bar.pips(jukebox.disc().composition())
+  // bar.pips(jukebox.disc().composition())
   $('.js-track').removeClass('+light')
-  $('#js-track-' + track.idx).addClass('+light')
+  var item = $('#js-track-' + track.idx)
+  item.addClass('+light')
+  var container = item.closest('.gm-scroll-view')
+  // if (!container.is(':hover')) {
+  container.stop().animate({
+    scrollTop: container.scrollTop() + item.offset().top - container.offset().top
+  }, '300')
+  // }
 })
 
 var $output = $('.js-output')
