@@ -53,9 +53,6 @@ jukebox.on('cued', function (track) {
   // }
 })
 
-var $output = $('.js-output')
-$output.html(template({ tracks: data.tracks }))
-
 $('.js-track').click(function (evt) {
   var idx = $(this).data().trackIdx
   jukebox.tune(idx)

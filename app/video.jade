@@ -12,6 +12,11 @@ html(lang="pt")
 
   body#sfcss
 
+    - var tracks = require('./modules/fixtures/videos.json').tracks.map(function (track, i) {
+    -  track.idx = i
+    -  return track
+    - })
+
     .container
       .row
         .col-sm-7
@@ -22,7 +27,7 @@ html(lang="pt")
               = ' '
               span.js-stdout
             .Embed.Embed--3by2(class="+light").u-spacer--xl
-              video#video(data-current-track="7")
+              video#video(data-current-track="0")
             .Arrange
               .Arrange-sizeFit
                 button#toggle.btn.btn-default toggle
@@ -35,6 +40,12 @@ html(lang="pt")
         .col-sm-4
           .Box
             .js-output
+              .Box.js-gemini.js-roulette(style='height: 500px; overflow: hidden')
+                .CutHere.CutHere--lg
+                  for track in tracks
+                    div
+                      .Box.js-track(role='button' id='js-track-#{track.idx}' data-track-idx=track.idx) #{track.url}
+
 
     script(src="jquery/dist/jquery.min.js")
     script(src="scripts/radio-player.min.js")

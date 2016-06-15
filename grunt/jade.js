@@ -1,9 +1,16 @@
 'use strict'
 
+var path = require('path')
+
 module.exports = {
   main: {
     options: {
-      pretty: true
+      pretty: true,
+      data: {
+        require: function (modulePath) {
+          return require(path.join('../app', modulePath))
+        }
+      }
     },
     files: [{
       expand: true,
