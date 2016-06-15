@@ -120,7 +120,7 @@ module.exports = function ($media) {
   cue = function (position, quiet) {
     off()
 
-    var waitingId = emitStateChange('waiting', 50)
+    var waitingId = quiet ? null : emitStateChange('waiting', 50)
 
     $media
     .one('error.jukebox', error)
