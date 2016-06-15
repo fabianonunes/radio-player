@@ -1,12 +1,12 @@
 'use strict'
 
 var $ = require('jquery')
-var Eev = require('eev')
 var transformKey = require('./lib/transform-key')
+var EventEmitter = require('wolfy87-eventemitter')
 var raf = require('raf')
 
 module.exports = function ($el) {
-  var r = new Eev()
+  var r = new EventEmitter()
 
   var bar = $('<div class="Progress-bar"/>').prependTo($el)[0]
   var done = $('<div class="Progress-done"/>').prependTo(bar)[0]
@@ -60,7 +60,7 @@ module.exports = function ($el) {
     return Math.max(0, Math.min(n, 1))
   }
 
-  var setValue = function (v, slide) {
+  var set = function (v, slide) {
     if (enabled) {
       value = normalizeInput(v)
       change(slide)
@@ -71,7 +71,7 @@ module.exports = function ($el) {
   }
 
   var slide = function (v) {
-    setValue(v, true)
+    set(v, true)
   }
 
   var inputPosition = function (ev) {
@@ -82,7 +82,7 @@ module.exports = function ($el) {
   var click = function (ev) {
     $el.focus()
     relayout()
-    setValue(inputPosition(ev))
+    set(inputPosition(ev))
     updateWidth()
   }
 
@@ -100,12 +100,12 @@ module.exports = function ($el) {
   }
 
   var touchend = function () {
-    setValue(scrubValue)
+    set(scrubValue)
     scrubValue = false
     $el.blur()
   }
 
-  var pipes = function (composition) {
+  var pips = function (composition) {
     $el.find('.Progress-pipe').remove()
     composition.forEach(function (sect) {
       $('<span class="Progress-pipe"></span>').css({ left: sect * 100 + '%' }).appendTo($el)
@@ -115,10 +115,10 @@ module.exports = function ($el) {
   var keydown = function (ev) {
     switch (ev.keyCode) {
       case 39:
-        setValue(value + 0.05)
+        set(value + 0.05)
         break
       case 37:
-        setValue(value - 0.05)
+        set(value - 0.05)
         break
       default:
     }
@@ -154,10 +154,10 @@ module.exports = function ($el) {
   enable($el.data('inert'))
   updateWidth()
 
-  r.setValue = setValue
+  r.set = set
   r.slide = slide
   r.valueMax = valueMax
-  r.pipes = pipes
+  r.pips = pips
   r.enable = enable
   r.disable = disable
   r.value = function () {
