@@ -14,18 +14,27 @@ html(lang="pt")
 
     .container
       .row
-        .col-sm-8
+        .col-sm-7
           .Box.Box--lg
+            .Box.Box--y
+              strong.text-muted state
+              | :
+              = ' '
+              span.js-stdout
             .Embed.Embed--3by2(class="+light").u-spacer--xl
-              video#video(controls="true" data-current-track="0")
-            input#progress(type="range" value="0")
+              video#video(data-current-track="7")
+            .Arrange
+              .Arrange-sizeFit
+                button#toggle.btn.btn-default toggle
+              .Arrange-sizeFill
+                .Progress.js-progress(role="progressbar" tabindex=-1 aria-valuemax="1")
+                  .Progress-scrubber
+              .Arrange-sizeFit
+                button#toggle.btn.btn-default toggle
+
         .col-sm-4
           .Box
             .js-output
 
-      .Box
-        button#goto.btn.btn-default Ir para 50%
-
     script(src="jquery/dist/jquery.min.js")
     script(src="scripts/radio-player.min.js")
-
