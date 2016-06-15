@@ -4,17 +4,19 @@ var $ = require('jquery')
 var progressbar = require('./progressbar')
 require('./plugin')
 
-// require('./disc-player')
-// $('.Player').discPlayer()
-
-var template = require('./templates/tracks.jade')
-
 var data = require('./fixtures/videos.json')
+
 var $video = $('#video')
 var $toggle = $('#toggle')
 var $progress = $('.js-progress')
 var $stdout = $('.js-stdout')
 var bar = progressbar($progress)
+
+var Gemini = require('gemini-scrollbar')
+new Gemini({
+  element: document.querySelector('.js-gemini'),
+  autoshow: true
+}).create()
 
 $video.jukebox({
   tracks: data.tracks,
@@ -52,9 +54,3 @@ $('.js-track').click(function (evt) {
   jukebox.tune(idx)
   evt.preventDefault()
 })
-
-var Gemini = require('gemini-scrollbar')
-new Gemini({
-  element: document.querySelector('.js-gemini'),
-  autoshow: true
-}).create()
