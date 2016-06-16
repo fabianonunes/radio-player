@@ -86,7 +86,6 @@ module.exports = function ($media) {
   }
 
   var error = function () {
-    eject()
     emitter.emit('error', disc)
   }
 
