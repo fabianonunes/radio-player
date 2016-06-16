@@ -1,8 +1,7 @@
 'use strict'
 
 var $ = require('jquery')
-var progressbar = require('./progressbar')
-require('./plugin')
+var combo = require('./combo')
 
 var data = require('./fixtures/videos.json')
 
@@ -10,7 +9,6 @@ var $video = $('#video')
 var $toggle = $('#toggle')
 var $progress = $('.js-progress')
 var $stdout = $('.js-stdout')
-var bar = progressbar($progress)
 
 var Gemini = require('gemini-scrollbar')
 new Gemini({
@@ -18,27 +16,16 @@ new Gemini({
   autoshow: true
 }).create()
 
-$video.jukebox({
+var jukebox = combo($video, {
   tracks: data.tracks,
-  progress: function (p) {
-    bar.slide(p.progress)
-  }
+  progress: $progress
 })
 
-var jukebox = $video.data('plugin-jukebox')
 jukebox.on('state', function (state) {
   $stdout.html(state)
 })
 
 $toggle.click(jukebox.toggle)
-
-bar.on('change', function (v) {
-  jukebox.search(v.progress)
-})
-
-$progress.on('change', function () {
-  jukebox.search(this.value)
-})
 
 jukebox.on('cued', function (track) {
   // bar.pips(jukebox.disc().composition())
