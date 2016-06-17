@@ -130,8 +130,8 @@ module.exports = function ($media) {
     .one('loadeddata.jukebox', function () {
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
+        // TODO: tentar reproduzir essa situação
         if (media.duration === 100 && media.currentTime === 0) {
-          // TODO: tentar reproduzir essa situação
           $media.one('timeupdate.jukebox', function () {
             seek(position)
           })
