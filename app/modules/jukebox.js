@@ -116,8 +116,6 @@ module.exports = function ($media) {
     })
   }
 
-  var noop = function () {}
-
   cue = function (position, quiet) {
     off()
 
@@ -125,9 +123,11 @@ module.exports = function ($media) {
 
     $media
     .one('error.jukebox', error)
-    .one('canplaythrough.jukebox', quiet === true ? noop : play)
-    .one('loadeddata.jukebox', function () {
+    .one('canplaythrough.jukebox', function () {
       clearTimeout(waitingId)
+      if (quiet !== true) { play() }
+    })
+    .one('loadeddata.jukebox', function () {
       if (position) {
         // android player só recupera a duração depois do primeiro timeupdate
         if (media.duration === 100 && media.currentTime === 0) {
