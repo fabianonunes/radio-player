@@ -52,7 +52,9 @@ module.exports = function ($media) {
     if (disc.currentTrack()) {
       media.play()
       watch()
-      emitStateChange('playing')
+      $media.one('playing', function () {
+        emitStateChange('playing')
+      })
     } else {
       disc.rewind()
       cue()
