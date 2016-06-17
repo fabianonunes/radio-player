@@ -142,6 +142,7 @@ module.exports = function ($media) {
       on()
     })
 
+    lastTime = undefined
     media.src = disc.currentTrack().url
     if (position) {
       // evitar exibição do primeiro frame ao seek
