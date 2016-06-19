@@ -144,12 +144,13 @@ module.exports = function ($media) {
     })
 
     lastTime = undefined
+
+    // evitar exibição do primeiro frame ao seek
+    $media.css({ display: position ? 'none' : elementDisplay })
+
     media.src = disc.currentTrack().url
-    if (position) {
-      // evitar exibição do primeiro frame ao seek
-      $media.css({ display: 'none' })
-    }
     media.load() // necessário para o IOS
+
     emitter.emit('cued', disc.currentTrack())
   }
 
