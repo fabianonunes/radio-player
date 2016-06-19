@@ -13,6 +13,7 @@ module.exports = function ($media) {
 
   var emitStateChange = function (state, delay) {
     if (currentState !== state) {
+      currentState = state
       var f = emitter.emit.bind(emitter, state)
       return delay ? setTimeout(f, delay) : f()
     }
@@ -237,7 +238,6 @@ module.exports = function ($media) {
 
   ;['error', 'pause', 'playing', 'stop', 'waiting'].forEach(function (event) {
     emitter.on(event, function () {
-      currentState = event
       emitter.emit('state', event)
     })
   })
