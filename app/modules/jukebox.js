@@ -228,7 +228,7 @@ module.exports = function ($media) {
       .on('timeupdate.jukebox', timeupdate)
       .on('ended.jukebox', ended)
       .on('waiting.jukebox loadstart.jukebox', function () {
-        emitter.emit('waiting')
+        emitStateChange('waiting')
       })
   }
 
