@@ -128,9 +128,11 @@ module.exports = function ($media) {
     $media
     .one('error.jukebox', error)
     .one('canplaythrough.jukebox', function () {
+      if (quiet !== true) { play() }
+    })
+    .one('playing.jukebox', function () {
       on()
       clearTimeout(waitingId)
-      if (quiet !== true) { play() }
     })
     .one('loadeddata.jukebox', function () {
       if (position) {
