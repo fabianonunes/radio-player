@@ -103,7 +103,7 @@ module.exports = function ($media) {
   var seek = function (position) {
     pause(true)
     media.currentTime = position
-    var waitingId = emitStateChange('waiting', 50)
+    var waitingId = emitStateChange('waiting', 100)
 
     $media.one('seeked.jukebox', function () {
       $media.css({ 'display': elementDisplay })
@@ -119,7 +119,7 @@ module.exports = function ($media) {
   cue = function (position, quiet) {
     off()
 
-    var waitingId = quiet ? null : emitStateChange('waiting', 50)
+    var waitingId = quiet ? null : emitStateChange('waiting', 100)
 
     $media
     .one('error.jukebox', error)
