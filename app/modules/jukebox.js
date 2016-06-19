@@ -109,12 +109,14 @@ module.exports = function ($media) {
 
     $media.one('seeked.jukebox', function () {
       $media.css({ 'display': elementDisplay })
-      clearTimeout(waitingId)
       if (media.readyState < 3) {
         $media.one('canplay.jukebox', play)
       } else {
         play()
       }
+    })
+    .one('playing', function () {
+      clearTimeout(waitingId)
     })
   }
 
