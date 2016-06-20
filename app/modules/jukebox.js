@@ -1,8 +1,19 @@
+var $ = require('jquery')
 var EventEmitter = require('wolfy87-eventemitter')
+var audiobinder = require('./lib/audiobinder.js')
 
 module.exports = function ($media) {
   var emitter = new EventEmitter()
   var media = $media.get(0)
+
+  var log = function () {
+    $('#dump_output').text([].join.call(arguments, ' / '))
+  }
+
+  audiobinder($media)
+  audiobinder($media, function (event, currentTime, duration, readyState) {
+    log(event, currentTime)
+  })
 
   var elementDisplay = $media.css('display')
 
@@ -28,7 +39,7 @@ module.exports = function ($media) {
     }
 
     if (lastTime !== undefined) {
-      emitStateChange(media.currentTime === lastTime ? 'waiting' : 'playing')
+      // emitStateChange(media.currentTime === lastTime ? 'waiting' : 'playing')
     }
 
     lastTime = media.currentTime
@@ -41,8 +52,8 @@ module.exports = function ($media) {
 
   var watch = function () {
     stopWatch(intervalId)
-    loop()
-    intervalId = setInterval(loop, 200)
+    // loop()
+    // intervalId = setInterval(loop, 200)
   }
 
   var off = function () {
@@ -102,21 +113,17 @@ module.exports = function ($media) {
   }
 
   var seek = function (position) {
-    var waitingId = emitStateChange('waiting', 200)
-
-    pause(true)
     media.currentTime = position
+    media.play()
+    media.pause() // sem o pause, o chrome do android não dispara eventos depois do seeked
 
     $media.one('seeked.jukebox', function () {
       $media.css({ 'display': elementDisplay })
       if (media.readyState < 3) {
-        $media.one('canplay.jukebox', play)
+        $media.one('canplaythrough.jukebox', play)
       } else {
-        play()
+        play() // depois do pause anterior, força o lançamento do evento playing
       }
-    })
-    .one('playing', function () {
-      clearTimeout(waitingId)
     })
   }
 
@@ -128,7 +135,7 @@ module.exports = function ($media) {
     $media
     .one('error.jukebox', error)
     .one('canplaythrough.jukebox', function () {
-      if (quiet !== true) { play() }
+      if (quiet !== true && !position) { play() }
     })
     .one('playing.jukebox', function () {
       on()
@@ -227,7 +234,7 @@ module.exports = function ($media) {
     $media
       .on('timeupdate.jukebox', timeupdate)
       .on('ended.jukebox', ended)
-      .on('waiting.jukebox loadstart.jukebox', function () {
+      .on('waiting.jukebox seeking.jukebox', function () {
         emitStateChange('waiting')
       })
   }

@@ -1,5 +1,5 @@
 'use strict'
-module.exports = function (media) {
+module.exports = function (media, out) {
   ;['abort.audiobinder',
     'canplay.audiobinder',
     'canplaythrough.audiobinder',
@@ -17,7 +17,7 @@ module.exports = function (media) {
     'pause.audiobinder',
     'play.audiobinder',
     'playing.audiobinder',
-    'progress.audiobinder',
+    // 'progress.audiobinder',
     'ratechange.audiobinder',
     'seeked.audiobinder',
     'seeking.audiobinder',
@@ -28,9 +28,10 @@ module.exports = function (media) {
     'waiting.audiobinder'
   ].forEach(function (eventName) {
     media.on(eventName, function () {
-      console.log(
+      var print = out !== undefined ? out : console.log.bind(console)
+      print(
         eventName,
-        media[0].currentTime, media[0].duration, media[0].readyState, media[0].buffered.end(0)
+        media[0].currentTime, media[0].duration, media[0].readyState, media[0].buffered.length && media[0].buffered.end(0)
       )
     })
   })
