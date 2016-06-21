@@ -17,7 +17,7 @@ module.exports = function (media, out) {
     'pause.audiobinder',
     'play.audiobinder',
     'playing.audiobinder',
-    // 'progress.audiobinder',
+    'progress.audiobinder',
     'ratechange.audiobinder',
     'seeked.audiobinder',
     'seeking.audiobinder',
@@ -31,7 +31,7 @@ module.exports = function (media, out) {
       var print = out !== undefined ? out : console.log.bind(console)
       print(
         eventName,
-        media[0].currentTime, media[0].duration, media[0].readyState, media[0].buffered.length && media[0].buffered.end(0)
+        media[0].currentTime, media[0].duration, media[0].buffered.length && media[0].buffered.end(0)
       )
     })
   })
