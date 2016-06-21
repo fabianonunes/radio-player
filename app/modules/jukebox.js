@@ -59,7 +59,7 @@ module.exports = function ($media) {
     if (disc.currentTrack()) {
       media.play()
       watch()
-      $media.one('playing', function () {
+      $media.one('playing.jukebox', function () {
         emitStateChange('playing')
       })
     } else {
