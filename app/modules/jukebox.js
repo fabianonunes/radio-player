@@ -34,7 +34,7 @@ module.exports = function ($media) {
     }
 
     if (lastTime !== undefined) {
-      // emitStateChange(media.currentTime === lastTime ? 'waiting' : 'playing')
+      emitStateChange(media.currentTime === lastTime ? 'waiting' : 'playing')
     }
 
     lastTime = media.currentTime
@@ -47,8 +47,8 @@ module.exports = function ($media) {
 
   var watch = function () {
     stopWatch(intervalId)
-    // loop()
-    // intervalId = setInterval(loop, 200)
+    loop()
+    intervalId = setInterval(loop, 200)
   }
 
   var off = function () {
