@@ -14,11 +14,14 @@ module.exports = function ($media) {
   var on
   var cue
 
+  var stateDelay
   var emitStateChange = function (state, delay) {
     if (currentState !== state) {
+      clearTimeout(stateDelay)
       currentState = state
       var f = emitter.emit.bind(emitter, state)
-      return delay ? setTimeout(f, delay) : f()
+      stateDelay = delay ? setTimeout(f, delay) : f()
+      return stateDelay
     }
   }
 
@@ -122,7 +125,9 @@ module.exports = function ($media) {
   cue = function (position, quiet) {
     off()
 
-    var waitingId = quiet ? null : emitStateChange('waiting', 200)
+    if (quiet !== true) {
+      emitStateChange('waiting', 200)
+    }
 
     $media
     .one('error.jukebox', error)
@@ -131,7 +136,6 @@ module.exports = function ($media) {
     })
     .one('playing.jukebox', function () {
       on()
-      clearTimeout(waitingId)
     })
     .one('loadeddata.jukebox', function () {
       if (position) {
@@ -227,7 +231,7 @@ module.exports = function ($media) {
       .on('timeupdate.jukebox', timeupdate)
       .on('ended.jukebox', ended)
       .on('waiting.jukebox seeking.jukebox', function () {
-        emitStateChange('waiting')
+        emitStateChange('waiting', 100)
       })
   }
 
