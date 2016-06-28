@@ -1,11 +1,8 @@
 var EventEmitter = require('wolfy87-eventemitter')
-var audiobinder = require('./lib/audiobinder.js')
 
 module.exports = function ($media) {
   var emitter = new EventEmitter()
   var media = $media.get(0)
-
-  audiobinder($media)
 
   var elementDisplay = $media.css('display')
 
