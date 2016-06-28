@@ -26,10 +26,10 @@ var factory = function (el, opts) {
   if (progress) {
     var bar = progressbar(progress)
     jkbx.on('progress', function (p) {
-      bar.slide(p.progress)
+      bar.slide(p.progress.toFixed(3))
     })
     bar.on('change', function (p) {
-      jkbx.search(p.progress)
+      jkbx.search(p.progress.toFixed(3))
     })
   }
 
