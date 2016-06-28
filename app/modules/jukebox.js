@@ -176,7 +176,8 @@ module.exports = function ($media) {
     disc.release()
     emitter.emit('progress', {
       progress: 0,
-      currentTime: 0
+      currentTime: 0,
+      totalTime: disc.totalTime()
     })
     emitStateChange('stop')
   }
