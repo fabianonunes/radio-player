@@ -52,29 +52,32 @@ module.exports = function (data) {
     return totalDuration
   }
 
-  var search = function (progress) {
+  var _search = function (at) {
     var start = 0
     var idx = -1
     var position = 0
 
-    progress = Math.min(progress * totalDuration, totalDuration - 1)
-
     tracks
     .map(function (t) { return t.duration })
     .some(function (duration, i) {
-      if (start + duration >= progress) {
+      if (start + duration >= at) {
         idx = i
-        position = progress - start
+        position = at - start
         return true
       }
-
       start += duration
     })
 
     return {
+      idx: idx,
       track: tracks[idx],
       position: position
     }
+  }
+
+  var search = function (progress) {
+    progress = Math.min(progress, 0.99)
+    return _search(progress * totalDuration)
   }
 
   var composition = function () {
