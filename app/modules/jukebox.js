@@ -105,8 +105,8 @@ module.exports = function ($media) {
   }
 
   var seek = function (position) {
-    media.currentTime = position
     media.play()
+    media.currentTime = position
     media.pause() // sem o pause, o chrome do android não dispara eventos depois do seeked
 
     $media.one('seeked.jukebox', function () {
