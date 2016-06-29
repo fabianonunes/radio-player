@@ -18,7 +18,7 @@
     "jade-loader": "0.8.0",
     "jasmine-core": "^2.4.1",
     "jshint-stylish": "^2.2.0",
-    "karma": "^0.13.22",
+    "karma": "^1.1.0",
     "karma-chrome-launcher": "^1.0.1",
     "karma-jasmine": "^1.0.2",
     "karma-jasmine-ajax": "^0.1.13",
@@ -34,12 +34,12 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "eev": "0.0.4",
-    "gemini-scrollbar": "^1.4.1",
+    "gemini-scrollbar": "^1.4.2",
     "jquery": "^2.2.1",
     "json-loader": "^0.5.4",
     "pluginify": "github:fabianonunes/pluginify#1.1.0",
     "qwest": "^4.4.2",
     "raf": "^3.2.0",
-    "wolfy87-eventemitter": "^5.0.0"
+    "wolfy87-eventemitter": "^5.1.0"
   }
 }
