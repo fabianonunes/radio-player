@@ -2,14 +2,25 @@
 
 module.exports = function (data) {
   var _currentIdx = data.currentTrack || 0
-  var totalDuration = data.tracks.reduce(function (accum, track) {
+  var tracks = data.tracks
+
+  var totalDuration = tracks.reduce(function (accum, track) {
     return accum + track.duration
   }, 0)
 
-  var tracks = data.tracks.map(function (track, i) {
-    track.idx = i
-    return track
-  })
+  var segment = function (start, end) {
+    var open = trackAt(start)
+    var close = trackAt(end)
+    var urls = []
+    for (var i = open.idx; i <= close.idx; i++) {
+      urls.push(tracks[i].url)
+    }
+    return {
+      inpoint: open.position,
+      urls: urls,
+      outpoint: close.position
+    }
+  }
 
   var next = function () {
     _currentIdx += 1
@@ -52,7 +63,7 @@ module.exports = function (data) {
     return totalDuration
   }
 
-  var _search = function (at) {
+  var trackAt = function (at) {
     var start = 0
     var idx = -1
     var position = 0
@@ -77,7 +88,7 @@ module.exports = function (data) {
 
   var search = function (progress) {
     progress = Math.min(progress, 0.99)
-    return _search(progress * totalDuration)
+    return trackAt(progress * totalDuration)
   }
 
   var composition = function () {
@@ -100,6 +111,8 @@ module.exports = function (data) {
     currentProgress: currentProgress,
     currentTime: currentTime,
     totalTime: totalTime,
+    trackAt: trackAt,
+    segment: segment,
     size: function () {
       return tracks.length
     },
