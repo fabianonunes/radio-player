@@ -219,6 +219,7 @@ module.exports = function ($media) {
     load(d)
     cue(0, quiet)
     timeupdate()
+    emitter.emit('durationchange', d.totalTime())
   }
 
   var toggle = function () {
