@@ -113,12 +113,18 @@ module.exports = function ($media) {
     media.currentTime = position
     media.pause() // sem o pause, o chrome do android não dispara eventos depois do seeked
 
+    var action = quiet ? pause : play
+
     $media.one('seeked.jukebox', function () {
       $media.css({ 'display': elementDisplay })
       if (media.readyState < 3) {
-        $media.one('canplaythrough.jukebox', play)
+        $media.one('canplaythrough.jukebox', action)
       } else {
-        play() // depois do pause anterior, força o lançamento do evento playing
+        action() // depois do pause anterior, força o lançamento do evento playing
+      }
+
+      if (quiet) {
+        emitStateChange('pause')
       }
     })
   }
@@ -144,10 +150,10 @@ module.exports = function ($media) {
         // TODO: tentar reproduzir essa situação
         if (media.duration === 100 && media.currentTime === 0) {
           $media.one('timeupdate.jukebox', function () {
-            seek(position)
+            seek(position, quiet)
           })
         } else {
-          seek(position)
+          seek(position, quiet)
         }
       }
     })
