@@ -95,16 +95,20 @@ module.exports = function ($media) {
     emitter.emit('error', disc)
   }
 
-  var timeupdate = function () {
+  var currentProgress = function () {
     var progress = (media.currentTime / media.duration) || 0
-    emitter.emit('progress', {
+    return {
       progress: disc.currentProgress(progress),
       currentTime: disc.currentTime(progress),
       totalTime: disc.totalTime()
-    })
+    }
   }
 
-  var seek = function (position) {
+  var timeupdate = function () {
+    emitter.emit('progress', currentProgress())
+  }
+
+  var seek = function (position, quiet) {
     media.play()
     media.currentTime = position
     media.pause() // sem o pause, o chrome do android não dispara eventos depois do seeked
@@ -241,6 +245,7 @@ module.exports = function ($media) {
   emitter.search = search
   emitter.toggle = toggle
   emitter.tune = tune
+  emitter.currentProgress = currentProgress
   emitter.disc = function () { return disc }
   emitter.state = function () { return currentState }
 
