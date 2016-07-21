@@ -159,15 +159,16 @@ module.exports = function ($media) {
     emitter.emit('cued', disc.currentTrack())
   }
 
-  var search = function (progress) {
+  var search = function (progress, forcePlay) {
+    var quiet = media.paused && !forcePlay
     pause(/* quiet */ true)
     var currentTrack = disc.currentTrack()
     var r = disc.search(progress)
     if (currentTrack && currentTrack.idx === r.track.idx) {
-      seek(r.position)
+      seek(r.position, quiet)
     } else {
       disc.setTrack(r.track.idx)
-      cue(r.position)
+      cue(r.position, quiet)
     }
   }
 

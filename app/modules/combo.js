@@ -29,7 +29,7 @@ var factory = function (el, opts) {
       bar.slide(p.progress.toFixed(3))
     })
     bar.on('change', function (p) {
-      jkbx.search(p.progress.toFixed(3))
+      jkbx.search(p.progress.toFixed(3), /* forcePlay */ true)
     })
   }
 
