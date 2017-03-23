@@ -1,6 +1,6 @@
 {
   "name": "radio-player",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "devDependencies": {
     "bowser": "^1.1.1",
     "grunt": "^1.0.1",
