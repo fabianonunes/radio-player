@@ -2,7 +2,7 @@
 
 var $ = require('jquery')
 var transformKey = require('./lib/transform-key')
-var EventEmitter = require('wolfy87-eventemitter')
+var EventEmitter = require('tiny-emitter')
 var raf = require('raf')
 
 module.exports = function ($el) {
